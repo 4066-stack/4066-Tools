@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The UPS Store #4066 Web Tools</title>
+    <style>
+        :root {
+            --ups-brown: #351C15;
+            --ups-gold: #FFB500;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .menu-container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .header {
+            background-color: var(--ups-brown);
+            color: var(--ups-gold);
+            padding: 30px 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 22px; 
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            font-style: italic;
+        }
+
+        .link-list {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .tool-link {
+            display: block;
+            text-decoration: none;
+            background-color: white;
+            color: var(--ups-brown);
+            border: 2px solid var(--ups-brown);
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .tool-link:hover {
+            background-color: var(--ups-brown);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .tool-link:active {
+            transform: translateY(0);
+        }
+
+        .footer {
+            padding: 20px;
+            font-size: 12px;
+            color: #888;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="menu-container">
+        <div class="header">
+            <h1>The UPS Store #4066 Web Tools</h1>
+        </div>
+
+        <div class="link-list">
+            <a href="https://4066-stack.github.io/RTS/" class="tool-link" target="_blank">
+                📦 Return To Sender Tag
+            </a>
+            
+            <a href="https://4066-stack.github.io/4066-Price/" class="tool-link" target="_blank">
+                🏷️ Price Tag Tool
+            </a>
+            
+            <a href="https://4066-stack.github.io/4066/" class="tool-link" target="_blank">
+                🖨️ Wide Format Price Tool
+            </a>
+        </div>
+
+        <div class="footer">
+            Select a tool to open it in a new tab.
+        </div>
+    </div>
+
+</body>
+</html>
