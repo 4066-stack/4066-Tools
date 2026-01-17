@@ -21,6 +21,28 @@
         .border-ups-brown { border-color: #351C15; }
         .hover\:bg-ups-brown-dark:hover { background-color: #2a1610; }
 
+        /* --- HOME BUTTON STYLE --- */
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: background 0.2s;
+        }
+
+        .home-button:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
         .chart-container {
             position: relative;
             width: 100%;
@@ -60,9 +82,9 @@
             align-items: center;
             z-index: 50;
         }
-        /* PRINT STYLES: Hides the main app and shows the printable area for PDF generation */
+        /* PRINT STYLES */
         @media print {
-            .main-app {
+            .main-app, .home-button {
                 display: none !important;
             }
             .printable-area {
@@ -82,6 +104,8 @@
 </head>
 <body class="bg-slate-50 text-slate-800">
 
+    <a href="https://ups4066.com/" class="home-button">Home</a>
+
     <div id="main-app" class="container mx-auto p-4 sm:p-6 lg:p-8 main-app">
         <header class="text-center mb-8 bg-white p-6 rounded-2xl shadow-lg">
             <h1 class="text-3xl sm:text-4xl font-bold text-ups-brown">The UPS Store #4066</h1>
@@ -100,7 +124,6 @@
         </header>
 
         <main class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-
             <div class="lg:col-span-3 bg-white p-6 rounded-2xl shadow-lg">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-bold text-slate-900">Build Your Quote</h2>
@@ -109,14 +132,13 @@
                         Add Job
                     </button>
                 </div>
-                <div id="job-items-container" class="space-y-6">
-                </div>
+                <div id="job-items-container" class="space-y-6"></div>
             </div>
             
             <div class="lg:col-span-2 space-y-8">
                 <div class="bg-white p-6 rounded-2xl shadow-lg">
                     <h2 class="text-2xl font-bold text-slate-900 mb-4 text-center">Quote Summary</h2>
-                     <p class="text-sm text-slate-500 mb-4 text-center">This section provides a real-time calculation of print job costs. The chart below visualizes the cost distribution, helping you build a quote at a glance.</p>
+                     <p class="text-sm text-slate-500 mb-4 text-center">This section provides a real-time calculation of print job costs.</p>
                     <div class="chart-container mb-6">
                         <canvas id="cost-breakdown-chart"></canvas>
                     </div>
@@ -151,7 +173,6 @@
                             </div>
                         </div>
 
-
                         <div id="summary-discount-row" class="flex justify-between font-medium text-green-600 hidden">
                             <span>Total Discounts:</span>
                             <span id="summary-discount-total">-$0.00</span>
@@ -178,7 +199,6 @@
                 </div>
                  <div class="bg-white p-6 rounded-2xl shadow-lg">
                     <h2 class="text-2xl font-bold text-slate-900 mb-4 text-center">Reference Prices</h2>
-                     <p class="text-sm text-slate-500 mb-4 text-center">Edit prices below. Changes will apply to all calculations.</p>
                      <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead>
@@ -201,55 +221,40 @@
         
         <footer class="bg-white p-6 rounded-2xl shadow-lg mt-8">
             <h2 class="text-2xl font-bold text-slate-900 mb-4">Customer Information & Final Details</h2>
-            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div><label for="contact-name" class="block text-sm font-medium text-slate-700 mb-1">Customer Name</label><input type="text" id="contact-name" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="name"></div>
-                <div><label for="customer-company" class="block text-sm font-medium text-slate-700 mb-1">Company / Organization (Optional)</label><input type="text" id="customer-company" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="organization"></div>
-                <div><label for="contact-email" class="block text-sm font-medium text-slate-700 mb-1">Contact Email</label><input type="email" id="contact-email" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="email"></div>
-                <div><label for="contact-phone" class="block text-sm font-medium text-slate-700 mb-1">Contact Phone</label><input type="tel" id="contact-phone" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="tel"></div>
-                
+                <div><label for="contact-name" class="block text-sm font-medium text-slate-700 mb-1">Customer Name</label><input type="text" id="contact-name" class="w-full p-2 border border-slate-300 rounded-md"></div>
+                <div><label for="customer-company" class="block text-sm font-medium text-slate-700 mb-1">Company (Optional)</label><input type="text" id="customer-company" class="w-full p-2 border border-slate-300 rounded-md"></div>
+                <div><label for="contact-email" class="block text-sm font-medium text-slate-700 mb-1">Contact Email</label><input type="email" id="contact-email" class="w-full p-2 border border-slate-300 rounded-md"></div>
+                <div><label for="contact-phone" class="block text-sm font-medium text-slate-700 mb-1">Contact Phone</label><input type="tel" id="contact-phone" class="w-full p-2 border border-slate-300 rounded-md"></div>
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-slate-700 mb-1">Delivery Method</label>
                     <div class="flex space-x-6 p-2 border border-slate-300 rounded-md bg-slate-50">
-                        <label class="inline-flex items-center">
-                            <input type="radio" name="delivery-method" id="delivery-pickup" value="Store Pickup" class="delivery-radio text-[#351C15] focus:ring-[#FFB500]" checked>
-                            <span class="ml-2 text-slate-700">Store Pickup</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="radio" name="delivery-method" id="delivery-shipping" value="Shipping" class="delivery-radio text-[#351C15] focus:ring-[#FFB500]">
-                            <span class="ml-2 text-slate-700">Shipping</span>
-                        </label>
+                        <label class="inline-flex items-center"><input type="radio" name="delivery-method" value="Store Pickup" class="delivery-radio" checked><span class="ml-2">Store Pickup</span></label>
+                        <label class="inline-flex items-center"><input type="radio" name="delivery-method" value="Shipping" class="delivery-radio"><span class="ml-2">Shipping</span></label>
                     </div>
                 </div>
-
                 <div id="shipping-address-container" class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
-                    <div><label for="shipping-street" class="block text-sm font-medium text-slate-700 mb-1">Street Address</label><input type="text" id="shipping-street" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="street-address"></div>
-                    <div><label for="shipping-city" class="block text-sm font-medium text-slate-700 mb-1">City</label><input type="text" id="shipping-city" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="address-level2"></div>
-                    <div><label for="shipping-state" class="block text-sm font-medium text-slate-700 mb-1">State</label><input type="text" id="shipping-state" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="address-level1"></div>
-                    <div><label for="shipping-zip" class="block text-sm font-medium text-slate-700 mb-1">ZIP Code</label><input type="text" id="shipping-zip" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="postal-code"></div>
+                    <div><label class="block text-sm font-medium text-slate-700 mb-1">Street Address</label><input type="text" id="shipping-street" class="w-full p-2 border border-slate-300 rounded-md"></div>
+                    <div><label class="block text-sm font-medium text-slate-700 mb-1">City</label><input type="text" id="shipping-city" class="w-full p-2 border border-slate-300 rounded-md"></div>
+                    <div><label class="block text-sm font-medium text-slate-700 mb-1">State</label><input type="text" id="shipping-state" class="w-full p-2 border border-slate-300 rounded-md"></div>
+                    <div><label class="block text-sm font-medium text-slate-700 mb-1">ZIP Code</label><input type="text" id="shipping-zip" class="w-full p-2 border border-slate-300 rounded-md"></div>
                     <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div><label for="shipping-cost" class="block text-sm font-medium text-slate-700 mb-1">Shipping Cost ($)</label><input type="number" id="shipping-cost" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" min="0" placeholder="Enter shipping cost"></div>
-                        <div><label for="packaging-cost" class="block text-sm font-medium text-slate-700 mb-1">Packaging Cost ($)</label><input type="number" id="packaging-cost" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" min="0" placeholder="Enter packaging cost"></div>
+                        <div><label class="block text-sm font-medium text-slate-700 mb-1">Shipping Cost ($)</label><input type="number" id="shipping-cost" class="w-full p-2 border border-slate-300 rounded-md"></div>
+                        <div><label class="block text-sm font-medium text-slate-700 mb-1">Packaging Cost ($)</label><input type="number" id="packaging-cost" class="w-full p-2 border border-slate-300 rounded-md"></div>
                     </div>
                 </div>
-
-
-                <div class="md:col-span-2 text-right"><button id="submit-order-btn" class="ups-brown text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-ups-brown-dark transition-colors duration-300">Generate Quote PDF</button></div>
+                <div class="md:col-span-2 text-right"><button id="submit-order-btn" class="ups-brown text-white font-semibold py-3 px-6 rounded-lg">Generate Quote PDF</button></div>
             </div>
         </footer>
-
     </div>
 
-    <!-- Hidden Printable Area for PDF Generation -->
-    <div id="printable-area" class="printable-area hidden">
-        <!-- Content will be injected by JavaScript before printing -->
-    </div>
+    <div id="printable-area" class="printable-area hidden"></div>
 
     <div id="submission-modal" class="modal-overlay hidden">
-        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-lg w-full transform transition-all">
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-lg w-full">
             <h3 id="modal-title" class="text-2xl font-bold text-green-700 mb-4"></h3>
             <p id="modal-message" class="text-slate-700 mb-6"></p>
-            <button id="modal-close-btn" class="w-full ups-brown text-white font-semibold py-2 rounded-lg hover:bg-ups-brown-dark transition-colors">Close</button>
+            <button id="modal-close-btn" class="w-full ups-brown text-white font-semibold py-2 rounded-lg">Close</button>
         </div>
     </div>
 
@@ -257,63 +262,32 @@
         <div class="job-item border border-slate-200 p-4 rounded-xl">
             <div class="flex justify-between items-start mb-4">
                 <div class="flex-grow">
-                     <label class="block text-sm font-medium text-slate-700 mb-1">Job Description (Optional)</label>
-                     <input type="text" class="job-description w-full p-2 border border-slate-300 rounded-md text-lg font-semibold" placeholder="e.g., Main Hall Poster">
+                     <label class="block text-sm font-medium text-slate-700 mb-1">Job Description</label>
+                     <input type="text" class="job-description w-full p-2 border border-slate-300 rounded-md" placeholder="e.g., Main Hall Poster">
                 </div>
                 <button class="remove-job-btn text-slate-400 hover:text-red-600 ml-4 mt-8">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                 </button>
             </div>
-            
-            <div class="mt-4">
-                <label class="block text-sm font-medium text-slate-700 mb-1">Associated File Name</label>
-                <input type="text" class="job-file-name w-full p-2 border border-slate-300 rounded-md" placeholder="e.g., poster_v2.pdf">
-            </div>
-
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Dimensions (W x H inches)</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Dimensions (W x H in)</label>
                     <div class="flex items-center">
-                        <input type="number" class="job-width w-1/2 p-2 border border-slate-300 rounded-l-md" placeholder="W" min="0">
+                        <input type="number" class="job-width w-1/2 p-2 border border-slate-300 rounded-l-md" placeholder="W">
                         <span class="p-2 border-y border-slate-300 bg-slate-50">x</span>
-                        <input type="number" class="job-height w-1/2 p-2 border border-slate-300 rounded-r-md" placeholder="H" min="0">
+                        <input type="number" class="job-height w-1/2 p-2 border border-slate-300 rounded-r-md" placeholder="H">
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Quantity</label>
-                    <input type="number" class="job-quantity w-full p-2 border border-slate-300 rounded-md" value="1" min="1">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Material</label>
-                    <select class="job-material w-full p-2 border border-slate-300 rounded-md bg-white">
-                    </select>
-                </div>
+                <div><label class="block text-sm font-medium text-slate-700 mb-1">Quantity</label><input type="number" class="job-quantity w-full p-2 border border-slate-300 rounded-md" value="1"></div>
+                <div><label class="block text-sm font-medium text-slate-700 mb-1">Material</label><select class="job-material w-full p-2 border border-slate-300 rounded-md bg-white"></select></div>
             </div>
-            
-            <div class="mt-4">
-                <label class="block text-sm font-medium text-slate-700 mb-2">Orientation</label>
-                <div class="flex space-x-6">
-                    <label class="inline-flex items-center">
-                        <input type="radio" class="job-orientation-radio text-[#351C15] focus:ring-[#FFB500]" name="orientation-group" value="Portrait" checked>
-                        <span class="ml-2 text-slate-700">Portrait</span>
-                    </label>
-                    <label class="inline-flex items-center">
-                        <input type="radio" class="job-orientation-radio text-[#351C15] focus:ring-[#FFB500]" name="orientation-group" value="Landscape">
-                        <span class="ml-2 text-slate-700">Landscape</span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="mt-4 text-right">
-                <span class="text-xl font-bold text-ups-brown item-total">$0.00</span>
-            </div>
+            <div class="mt-4 text-right"><span class="text-xl font-bold text-ups-brown item-total">$0.00</span></div>
         </div>
     </template>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             let jobUniqueIdCounter = 0;
-
             const mainApp = document.getElementById('main-app');
             const printableArea = document.getElementById('printable-area');
             const addJobBtn = document.getElementById('add-job-btn');
@@ -330,12 +304,9 @@
             const orderDiscountDollarEl = document.getElementById('order-discount-dollar');
             const summaryDiscountRowEl = document.getElementById('summary-discount-row');
             const summaryDiscountTotalEl = document.getElementById('summary-discount-total');
-            
             const orderFeeDollarEl = document.getElementById('order-fee-dollar');
-            const orderFeeDescriptionEl = document.getElementById('order-fee-description');
             const summaryFeesRowEl = document.getElementById('summary-fees-row');
             const summaryFeesTotalEl = document.getElementById('summary-fees-total');
-
             const shippingCostEl = document.getElementById('shipping-cost');
             const packagingCostEl = document.getElementById('packaging-cost');
             const summaryShippingRowEl = document.getElementById('summary-shipping-row');
@@ -343,505 +314,104 @@
             const summaryPackagingRowEl = document.getElementById('summary-packaging-row');
             const summaryPackagingCostEl = document.getElementById('summary-packaging-cost');
 
-
             const ctx = document.getElementById('cost-breakdown-chart').getContext('2d');
             let costChart = new Chart(ctx, {
                 type: 'doughnut',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        data: [],
-                        backgroundColor: ['#351C15', '#FFB500', '#6b7280', '#d1d5db', '#9ca3af', '#4b5563'],
-                        borderColor: '#ffffff',
-                        borderWidth: 2,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 15,
-                                font: {
-                                     size: 14
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed !== null) {
-                                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed);
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    }
-                }
+                data: { labels: [], datasets: [{ data: [], backgroundColor: ['#351C15', '#FFB500', '#6b7280', '#d1d5db'], borderColor: '#ffffff', borderWidth: 2 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
 
-            function formatCurrency(amount) {
-                return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-            }
+            function formatCurrency(amount) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount); }
 
             function updateChart(labels, data) {
-                if(labels.length === 0) {
-                    labels.push('No items yet');
-                    data.push(1);
-                }
-                costChart.data.labels = labels;
-                costChart.data.datasets[0].data = data;
-                costChart.update();
+                if(labels.length === 0) { labels.push('No items yet'); data.push(1); }
+                costChart.data.labels = labels; costChart.data.datasets[0].data = data; costChart.update();
             }
 
             function getPrices() {
                 return {
-                    matte: { price: parseFloat(document.getElementById('price-matte').value) || 0, name: 'Matte Photo Paper', maxWidth: 44 },
-                    '46bond': { price: parseFloat(document.getElementById('price-46bond').value) || 0, name: '46# Bond', maxWidth: 36 },
-                    '20bond': { price: parseFloat(document.getElementById('price-20bond').value) || 0, name: '20# Bond', maxWidth: 36 },
+                    matte: { price: parseFloat(document.getElementById('price-matte').value) || 0, name: 'Matte Photo Paper' },
+                    '46bond': { price: parseFloat(document.getElementById('price-46bond').value) || 0, name: '46# Bond' },
+                    '20bond': { price: parseFloat(document.getElementById('price-20bond').value) || 0, name: '20# Bond' },
                 };
             }
 
             function updateAllDropdownsAndRecalculate() {
                 const prices = getPrices();
-                 const wideFormatMaterials = [
-                    { name: 'Select a material...', price: 0, maxWidth: Infinity },
-                    { name: prices.matte.name, price: prices.matte.price, maxWidth: prices.matte.maxWidth },
-                    { name: prices['46bond'].name, price: prices['46bond'].price, maxWidth: prices['46bond'].maxWidth },
-                    { name: prices['20bond'].name, price: prices['20bond'].price, maxWidth: prices['20bond'].maxWidth }
-                ];
-
+                const mats = [{ name: 'Select material...', price: 0 }, prices.matte, prices['46bond'], prices['20bond']];
                 document.querySelectorAll('.job-item').forEach(jobItem => {
                     const materialSelect = jobItem.querySelector('.job-material');
                     const selectedValue = materialSelect.value;
-                    materialSelect.innerHTML = ''; // Clear existing options
-
-                    wideFormatMaterials.forEach(material => {
-                        const option = document.createElement('option');
-                        option.value = material.price;
-                        option.textContent = `${material.name} (${material.price > 0 ? formatCurrency(material.price) + '/sq.ft' : ''})`;
-                        if (material.price === parseFloat(selectedValue)) {
-                            option.selected = true;
-                        }
-                        materialSelect.appendChild(option);
+                    materialSelect.innerHTML = '';
+                    mats.forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = m.price;
+                        opt.textContent = `${m.name} ${m.price > 0 ? '(' + formatCurrency(m.price) + '/sq.ft)' : ''}`;
+                        if (m.price === parseFloat(selectedValue)) opt.selected = true;
+                        materialSelect.appendChild(opt);
                     });
                 });
                 updateAllCalculations();
             }
 
-
             function updateAllCalculations() {
                 const jobItems = jobItemsContainer.querySelectorAll('.job-item');
-                let subtotal = 0;
-                let totalQuantity = 0;
-                let totalDiscount = 0;
-                let totalFees = 0;
-                
-                const chartLabels = [];
-                const chartData = [];
-
-                const prices = getPrices();
+                let subtotal = 0; let totalQuantity = 0; let totalDiscount = 0; let totalFees = 0;
+                const chartLabels = []; const chartData = [];
 
                 jobItems.forEach((item, index) => {
-                    const description = item.querySelector('.job-description').value.trim() || `Job #${index + 1}`;
-                    let currentWidth = parseFloat(item.querySelector('.job-width').value) || 0;
-                    let currentHeight = parseFloat(item.querySelector('.job-height').value) || 0;
-                    const quantity = parseInt(item.querySelector('.job-quantity').value) || 0;
-                    const pricePerSqFt = parseFloat(item.querySelector('.job-material').value) || 0;
-                    
-                    const sqInches = currentWidth * currentHeight;
-                    const sqFeet = sqInches / 144;
-                    let itemTotal = sqFeet * pricePerSqFt * quantity;
-                    
+                    const desc = item.querySelector('.job-description').value.trim() || `Job #${index + 1}`;
+                    const w = parseFloat(item.querySelector('.job-width').value) || 0;
+                    const h = parseFloat(item.querySelector('.job-height').value) || 0;
+                    const q = parseInt(item.querySelector('.job-quantity').value) || 0;
+                    const p = parseFloat(item.querySelector('.job-material').value) || 0;
+                    const itemTotal = (w * h / 144) * p * q;
                     item.querySelector('.item-total').textContent = formatCurrency(itemTotal);
-                    subtotal += itemTotal;
-                    totalQuantity += quantity;
-                    
-                    if (itemTotal > 0) {
-                        chartLabels.push(description);
-                        chartData.push(itemTotal);
-                    }
+                    subtotal += itemTotal; totalQuantity += q;
+                    if (itemTotal > 0) { chartLabels.push(desc); chartData.push(itemTotal); }
                 });
 
-                let subtotalAfterDiscounts = subtotal;
+                const discP = parseFloat(orderDiscountPercentEl.value) || 0;
+                const discD = parseFloat(orderDiscountDollarEl.value) || 0;
+                totalDiscount = (subtotal * discP / 100) + discD;
+                totalFees = parseFloat(orderFeeDollarEl.value) || 0;
 
-                const orderDiscountPercent = parseFloat(document.getElementById('order-discount-percent').value) || 0;
-                const orderDiscountDollar = parseFloat(document.getElementById('order-discount-dollar').value) || 0;
-                
-                totalDiscount += subtotalAfterDiscounts * (orderDiscountPercent / 100);
-                subtotalAfterDiscounts -= totalDiscount;
-                totalDiscount += orderDiscountDollar;
-                subtotalAfterDiscounts -= orderDiscountDollar;
-
-                if (subtotalAfterDiscounts < 0) subtotalAfterDiscounts = 0;
-                
-                const orderFee = parseFloat(document.getElementById('order-fee-dollar').value) || 0;
-                totalFees = orderFee;
-                
-                let subtotalWithFees = subtotalAfterDiscounts + totalFees;
-
-                if (totalDiscount > 0) {
-                    summaryDiscountRowEl.classList.remove('hidden');
-                    summaryDiscountTotalEl.textContent = `-${formatCurrency(totalDiscount)}`;
-                } else {
-                    summaryDiscountRowEl.classList.add('hidden');
-                }
-                
-                 if (totalFees > 0) {
-                    summaryFeesRowEl.classList.remove('hidden');
-                    summaryFeesTotalEl.textContent = `+${formatCurrency(totalFees)}`;
-                } else {
-                    summaryFeesRowEl.classList.add('hidden');
-                }
-
-                let shippingCost = 0;
-                let packagingCost = 0;
-                if (document.getElementById('delivery-shipping').checked) {
+                let shippingCost = 0; let packagingCost = 0;
+                if (document.querySelector('input[name="delivery-method"]:checked').value === 'Shipping') {
                     shippingCost = parseFloat(shippingCostEl.value) || 0;
                     packagingCost = parseFloat(packagingCostEl.value) || 0;
-                    
-                    summaryShippingRowEl.classList.remove('hidden');
-                    summaryShippingCostEl.textContent = formatCurrency(shippingCost);
-
-                    if (packagingCost > 0) {
-                        summaryPackagingRowEl.classList.remove('hidden');
-                        summaryPackagingCostEl.textContent = formatCurrency(packagingCost);
-                    } else {
-                        summaryPackagingRowEl.classList.add('hidden');
-                    }
-
+                    summaryShippingRowEl.classList.remove('hidden'); summaryShippingCostEl.textContent = formatCurrency(shippingCost);
+                    summaryPackagingRowEl.classList.toggle('hidden', packagingCost <= 0); summaryPackagingCostEl.textContent = formatCurrency(packagingCost);
                 } else {
-                    summaryShippingRowEl.classList.add('hidden');
-                    summaryPackagingRowEl.classList.add('hidden');
+                    summaryShippingRowEl.classList.add('hidden'); summaryPackagingRowEl.classList.add('hidden');
                 }
-                
-                const total = subtotalWithFees + shippingCost + packagingCost;
 
+                summaryDiscountRowEl.classList.toggle('hidden', totalDiscount <= 0); summaryDiscountTotalEl.textContent = `-${formatCurrency(totalDiscount)}`;
+                summaryFeesRowEl.classList.toggle('hidden', totalFees <= 0); summaryFeesTotalEl.textContent = `+${formatCurrency(totalFees)}`;
                 summarySubtotalEl.textContent = formatCurrency(subtotal);
-                summaryTotalEl.textContent = formatCurrency(total);
-                if(document.getElementById('summary-tax')) document.getElementById('summary-tax').style.display = 'none';
-                
+                summaryTotalEl.textContent = formatCurrency(Math.max(0, subtotal - totalDiscount + totalFees + shippingCost + packagingCost));
                 updateChart(chartLabels, chartData);
             }
 
             function createJobItem() {
                 const templateClone = jobItemTemplate.content.cloneNode(true);
                 const jobItemEl = templateClone.querySelector('.job-item');
-                const materialSelect = jobItemEl.querySelector('.job-material');
-                
-                const groupNameSuffix = `-${jobUniqueIdCounter++}`;
-                jobItemEl.querySelectorAll('input[type="radio"]').forEach(radio => {
-                    if(radio.name.includes('-group')) {
-                       radio.name = radio.name.replace('-group', groupNameSuffix);
-                    }
-                });
-                
-                const prices = getPrices();
-                const wideFormatMaterials = [
-                    { name: 'Select a material...', price: 0, maxWidth: Infinity },
-                    { name: prices.matte.name, price: prices.matte.price, maxWidth: prices.matte.maxWidth },
-                    { name: prices['46bond'].name, price: prices['46bond'].price, maxWidth: prices['46bond'].maxWidth },
-                    { name: prices['20bond'].name, price: prices['20bond'].price, maxWidth: prices['20bond'].maxWidth }
-                ];
-                
-                wideFormatMaterials.forEach(material => {
-                    const option = document.createElement('option');
-                    option.value = material.price;
-                    option.textContent = `${material.name} ${material.price > 0 ? '(' + formatCurrency(material.price) + '/sq.ft)' : ''}`;
-                    materialSelect.appendChild(option);
-                });
-
-
                 jobItemEl.addEventListener('input', updateAllCalculations);
-                jobItemEl.querySelector('.remove-job-btn').addEventListener('click', () => {
-                    jobItemEl.remove();
-                    updateAllCalculations();
-                });
-
+                jobItemEl.querySelector('.remove-job-btn').addEventListener('click', () => { jobItemEl.remove(); updateAllCalculations(); });
                 jobItemsContainer.appendChild(jobItemEl);
-                updateAllCalculations();
-            }
-
-            function collectAllData() {
-                const selectedDeliveryRadio = document.querySelector('input[name="delivery-method"]:checked');
-                const deliveryMethod = selectedDeliveryRadio.value;
-
-                const contactInfo = {
-                    name: document.getElementById('contact-name').value,
-                    company: document.getElementById('customer-company').value,
-                    email: document.getElementById('contact-email').value,
-                    phone: document.getElementById('contact-phone').value,
-                    delivery: deliveryMethod
-                };
-                
-                let shippingCost = 0;
-                let packagingCost = 0;
-                if (deliveryMethod === 'Shipping') {
-                    contactInfo.shippingStreet = document.getElementById('shipping-street').value;
-                    contactInfo.shippingCity = document.getElementById('shipping-city').value;
-                    contactInfo.shippingState = document.getElementById('shipping-state').value;
-                    contactInfo.shippingZip = document.getElementById('shipping-zip').value;
-                    shippingCost = parseFloat(shippingCostEl.value) || 0;
-                    packagingCost = parseFloat(packagingCostEl.value) || 0;
-                }
-
-                const jobItemsData = [];
-                const jobItems = jobItemsContainer.querySelectorAll('.job-item');
-                
-                let subtotal = 0;
-                let totalQuantity = 0;
-                let totalDiscount = 0;
-                let totalFees = 0;
-
-                jobItems.forEach((item, index) => {
-                    const description = item.querySelector('.job-description').value.trim() || `Job #${index + 1}`;
-                    const itemTotal = parseFloat(item.querySelector('.item-total').textContent.replace('$', ''));
-                    subtotal += itemTotal;
-                    
-                    const quantity = parseInt(item.querySelector('.job-quantity').value) || 0;
-                    totalQuantity += quantity;
-                    jobItemsData.push({
-                        description: description,
-                        file: item.querySelector('.job-file-name').value.trim() || 'N/A',
-                        width: parseFloat(item.querySelector('.job-width').value) || 0, 
-                        height: parseFloat(item.querySelector('.job-height').value) || 0,
-                        quantity: quantity,
-                        material: item.querySelector('.job-material').selectedOptions[0].text,
-                        orientation: item.querySelector('.job-orientation-radio:checked')?.value || 'N/A',
-                        itemTotal: itemTotal.toFixed(2),
-                    });
-                });
-
-                const orderDiscountPercent = parseFloat(document.getElementById('order-discount-percent').value) || 0;
-                const orderDiscountDollar = parseFloat(document.getElementById('order-discount-dollar').value) || 0;
-                let subtotalAfterDiscounts = subtotal;
-                totalDiscount += subtotalAfterDiscounts * (orderDiscountPercent / 100);
-                subtotalAfterDiscounts -= totalDiscount;
-                totalDiscount += orderDiscountDollar;
-                subtotalAfterDiscounts -= orderDiscountDollar;
-                
-                const orderFee = parseFloat(document.getElementById('order-fee-dollar').value) || 0;
-                totalFees = orderFee;
-                let subtotalWithFees = subtotalAfterDiscounts + totalFees;
-
-                const total = subtotalWithFees + shippingCost + packagingCost;
-
-                return {
-                    contact: contactInfo,
-                    jobs: jobItemsData,
-                    summary: {
-                        subtotal: subtotal.toFixed(2),
-                        shippingCost: shippingCost.toFixed(2),
-                        packagingCost: packagingCost.toFixed(2),
-                        total: total.toFixed(2),
-                        totalQuantity: totalQuantity,
-                        totalDiscount: totalDiscount.toFixed(2),
-                        totalFees: totalFees.toFixed(2),
-                    }
-                };
-            }
-
-            function generatePrintableHTML(data) {
-                let jobDetails = data.jobs.map((job, index) => {
-                    return `
-                    <div style="border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; background-color: #ffffff; page-break-inside: avoid;">
-                        <p style="font-weight: bold; margin-bottom: 0.5rem; font-size: 1.125rem;">JOB ${index + 1}: ${job.description}</p>
-                        <table style="width: 100%; font-size: 0.875rem; border-collapse: collapse;">
-                            <tr>
-                                <td style="width: 50%; padding: 0.25rem;"><span style="font-weight: 500;">File Name:</span> ${job.file}</td>
-                                <td style="width: 50%; padding: 0.25rem;"><span style="font-weight: 500;">Material:</span> ${job.material}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 0.25rem;"><span style="font-weight: 500;">Dimensions:</span> ${job.width}W x ${job.height}H in</td>
-                                <td style="padding: 0.25rem;"><span style="font-weight: 500;">Quantity:</span> ${job.quantity}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 0.25rem;" colspan="2"><span style="font-weight: 500;">Orientation:</span> ${job.orientation}</td> 
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="text-align: right; font-weight: bold; font-size: 1.25rem; color: #351C15; padding-top: 0.5rem; border-top: 1px solid #e2e8f0; margin-top: 0.5rem;">Job Cost: $${job.itemTotal}</td>
-                            </tr>
-                        </table>
-                    </div>
-                    `;
-                }).join('');
-                
-                if (data.jobs.length === 0) {
-                     jobDetails = '<p style="color: #64748b;">No active print jobs calculated.</p>';
-                }
-
-                let costSummaryHtml = `
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>Subtotal:</span>
-                        <span>$${data.summary.subtotal}</span>
-                    </div>
-                `;
-                if(parseFloat(data.summary.totalDiscount) > 0) {
-                    costSummaryHtml += `
-                    <div style="display: flex; justify-content: space-between; color: #16a34a; font-weight: 600;">
-                        <span>Discounts:</span>
-                        <span>-$${data.summary.totalDiscount}</span>
-                    </div>
-                    `;
-                }
-                if(parseFloat(data.summary.totalFees) > 0) {
-                    costSummaryHtml += `
-                    <div style="display: flex; justify-content: space-between; color: #dc2626; font-weight: 600;">
-                        <span>Fees:</span>
-                        <span>+$${data.summary.totalFees}</span>
-                    </div>
-                    `;
-                }
-
-                if(parseFloat(data.summary.shippingCost) > 0) {
-                    costSummaryHtml += `
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>Shipping:</span>
-                        <span>$${data.summary.shippingCost}</span>
-                    </div>
-                    `;
-                }
-                if(parseFloat(data.summary.packagingCost) > 0) {
-                    costSummaryHtml += `
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>Packaging:</span>
-                        <span>$${data.summary.packagingCost}</span>
-                    </div>
-                    `;
-                }
-                
-                const customerName = data.contact.name || 'N/A';
-                const customerCompany = data.contact.company ? `(${data.contact.company})` : '';
-
-                let shippingAddressHtml = '';
-                if(data.contact.delivery === 'Shipping' && data.contact.shippingStreet) {
-                    shippingAddressHtml = `
-                        <tr>
-                            <td colspan="2" style="padding: 0.25rem;"><span style="font-weight: 500;">Shipping Address:</span> ${data.contact.shippingStreet}, ${data.contact.shippingCity}, ${data.contact.shippingState} ${data.contact.shippingZip}</td>
-                        </tr>
-                    `;
-                }
-
-
-                let html = `
-                    <div style="padding: 2rem; max-width: 800px; margin: 0 auto; font-family: 'Inter', sans-serif;">
-                        <h1 style="font-size: 1.875rem; font-weight: bold; margin-bottom: 0.25rem; text-align: center; color: #351C15;">WIDE FORMAT PRINTING QUOTE</h1>
-                        <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; text-align: center; color: #351C15;">The UPS Store #4066</h2>
-                        <div style="text-align: center; color: #475569; margin-bottom: 1rem; line-height: 1.5;">
-                            <p>1442 S Winchester Blvd, San Jose, CA 95128</p>
-                            <p>store4066@theupsstore.com | ☎️ (408) 429-8009 | 📠 (408) 429-8787</p>
-                        </div>
-                        <p style="font-size: 1rem; color: #475569; margin-bottom: 2rem; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 1rem;">Quote For: ${customerName} ${customerCompany} | Total Prints: ${data.summary.totalQuantity} | Generated on: ${new Date().toLocaleString()}</p>
-                        
-                        <div style="margin-bottom: 2rem; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 0.75rem; background-color: #f8fafc; page-break-inside: avoid;">
-                            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; color: #351C15;">CUSTOMER & QUOTE INFORMATION</h2>
-                            
-                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 0.75rem;">
-                                <tr>
-                                    <td style="padding: 0.25rem; width: 50%;"><span style="font-weight: 500;">Customer Name:</span> ${data.contact.name || 'N/A'}</td>
-                                    <td style="padding: 0.25rem; width: 50%;"><span style="font-weight: 500;">Company:</span> ${data.contact.company || 'N/A'}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 0.25rem; width: 50%;"><span style="font-weight: 500;">Email:</span> ${data.contact.email || 'N/A'}</td>
-                                    <td style="padding: 0.25rem; width: 50%;"><span style="font-weight: 500;">Phone:</span> ${data.contact.phone || 'N/A'}</td>
-                                </tr>
-                                 <tr>
-                                     <td style="padding: 0.25rem;" colspan="2"><span style="font-weight: 500;">Delivery Method:</span> ${data.contact.delivery}</td>
-                                </tr>
-                                ${shippingAddressHtml}
-                            </table>
-                        </div>
-                        
-                        ${data.contact.delivery === 'Shipping' ? `
-                        <div style="margin-bottom: 2rem; page-break-inside: avoid;">
-                             <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; color: #351C15;">SHIPPING LABEL</h2>
-                             <div style="border: 2px dashed #ccc; width: 6in; height: 4in; padding: 0.5rem; margin: 0 auto;"></div>
-                        </div>
-                        ` : ''}
-
-                        <div style="margin-bottom: 2rem;">
-                            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; color: #351C15;">JOB DETAILS</h2>
-                            ${jobDetails}
-                        </div>
-
-                        <div style="border: 3px solid #351C15; padding: 1.5rem; border-radius: 0.75rem; background-color: #f8fafc; page-break-inside: avoid;">
-                            <h2 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem; color: #351C15;">TOTAL COST SUMMARY</h2>
-                            <div style="font-size: 1.125rem; line-height: 1.75rem;">
-                                ${costSummaryHtml}
-                                <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.5rem; border-top: 4px double #351C15; padding-top: 0.75rem; color: #351C15;">
-                                    <span>QUOTE:</span>
-                                    <span>$${data.summary.total}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                return html;
-            }
-
-            function showModal(title, message) {
-                document.getElementById('modal-title').textContent = title;
-                document.getElementById('modal-message').textContent = message;
-                modalEl.classList.remove('hidden');
-            }
-
-            function handleSubmission() {
-                const orderData = collectAllData();
-                const printableContent = generatePrintableHTML(orderData);
-
-                printableArea.innerHTML = printableContent;
-                
-                mainApp.classList.add('hidden');
-                printableArea.classList.remove('hidden');
-
-                setTimeout(() => {
-                    window.print();
-                    
-                    setTimeout(() => {
-                        mainApp.classList.remove('hidden');
-                        printableArea.classList.add('hidden');
-                        showModal(`Quote PDF Generation Started`, `Please use your browser's print dialog and select **"Save as PDF"** as the destination to generate and save the final quote file.`);
-                    }, 500); 
-
-                }, 100); 
+                updateAllDropdownsAndRecalculate();
             }
 
             addJobBtn.addEventListener('click', createJobItem);
-            submitBtn.addEventListener('click', handleSubmission);
+            submitBtn.addEventListener('click', () => { window.print(); });
             closeBtn.addEventListener('click', () => { modalEl.classList.add('hidden'); });
-            
-            document.querySelectorAll('.delivery-radio').forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    if (e.target.value === 'Shipping') {
-                        shippingAddressContainer.classList.remove('hidden');
-                    } else {
-                        shippingAddressContainer.classList.add('hidden');
-                    }
-                    updateAllCalculations();
-                });
-            });
-
-            document.querySelectorAll('.price-input').forEach(input => {
-                input.addEventListener('input', updateAllDropdownsAndRecalculate);
-            });
-            
-            shippingCostEl.addEventListener('input', updateAllCalculations);
-            packagingCostEl.addEventListener('input', updateAllCalculations);
-            orderDiscountPercentEl.addEventListener('input', updateAllCalculations);
-            orderDiscountDollarEl.addEventListener('input', updateAllCalculations);
-            orderFeeDollarEl.addEventListener('input', updateAllCalculations);
-            orderFeeDescriptionEl.addEventListener('input', updateAllCalculations);
-
+            document.querySelectorAll('.delivery-radio').forEach(r => r.addEventListener('change', (e) => {
+                shippingAddressContainer.classList.toggle('hidden', e.target.value !== 'Shipping');
+                updateAllCalculations();
+            }));
+            document.querySelectorAll('.price-input, #shipping-cost, #packaging-cost, #order-discount-percent, #order-discount-dollar, #order-fee-dollar').forEach(i => i.addEventListener('input', updateAllCalculations));
 
             createJobItem();
-            updateAllCalculations(); 
         });
     </script>
 </body>
