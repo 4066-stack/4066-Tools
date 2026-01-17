@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General Quote Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* New "Modern Blue" Brand Colors */
+        .theme-primary { background-color: #2563eb; } /* Royal Blue */
+        .theme-secondary { background-color: #64748b; } /* Slate */
+        .text-theme-primary { color: #2563eb; }
+        .text-theme-dark { color: #1e293b; } /* Slate 800 */
+        .border-theme-primary { border-color: #2563eb; }
+        .hover\:bg-theme-primary-dark:hover { background-color: #1d4ed8; } /* Darker Blue */
+        .focus\:ring-theme-primary:focus { --tw-ring-color: #2563eb; }
+        .focus\:border-theme-primary:focus { border-color: #2563eb; }
+
+        /* --- HOME BUTTON STYLE --- */
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: background 0.2s;
+        }
+
+        .home-button:hover {
+            background-color: #1d4ed8;
+            color: white;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+        /* PRINT STYLES */
+        @media print {
+            .main-app, .home-button {
+                display: none !important;
+            }
+            .printable-area {
+                display: block !important;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+            }
+        }
+        .price-input {
+            width: 6rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid #d1d5db;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <a href="https://ups4066.com/" class="home-button">Home</a>
+
+    <div id="main-app" class="container mx-auto p-4 sm:p-6 lg:p-8 main-app">
+        <header class="text-center mb-8 bg-white p-6 rounded-2xl shadow-lg">
+            <h1 class="text-3xl sm:text-4xl font-bold text-theme-primary">The UPS Store #4066</h1>
+            <h2 class="text-2xl sm:text-3xl font-semibold text-theme-dark mt-1">General Quote Calculator</h2>
+            <div class="mt-4 text-slate-600 space-y-1">
+                <p>1442 S Winchester Blvd, San Jose, CA 95128</p>
+                <p>
+                    <a href="mailto:store4066@theupsstore.com" class="text-theme-primary hover:underline">store4066@theupsstore.com</a>
+                </p>
+                <p>
+                    <span>☎️ (408) 429-8009</span>
+                    <span class="mx-2">|</span>
+                    <span>📠 (408) 429-8787</span>
+                </p>
+            </div>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+
+            <div class="lg:col-span-3 bg-white p-6 rounded-2xl shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-slate-900">Items</h2>
+                    <button id="add-job-btn" class="theme-primary text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-theme-primary-dark transition-colors duration-300 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        Add Item
+                    </button>
+                </div>
+                <div id="job-items-container" class="space-y-6"></div>
+            </div>
+            
+            <div class="lg:col-span-2 space-y-8">
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-4 text-center">Quote Summary</h2>
+                     <p class="text-sm text-slate-500 mb-4 text-center">Real-time calculation of costs.</p>
+                    
+                    <div class="space-y-3 text-lg mt-6">
+                        <div class="flex justify-between font-medium">
+                            <span>Subtotal:</span>
+                            <span id="summary-subtotal">$0.00</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 text-base mt-2 border-t pt-3">
+                            <div>
+                                <label for="order-discount-percent" class="block text-sm font-medium text-slate-700 mb-1">Order Discount (%)</label>
+                                <input type="number" id="order-discount-percent" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary" min="0" max="100">
+                            </div>
+                            <div>
+                                <label for="order-discount-dollar" class="block text-sm font-medium text-slate-700 mb-1">Order Discount ($)</label>
+                                <input type="number" id="order-discount-dollar" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary" min="0">
+                            </div>
+                        </div>
+                        
+                        <div class="border-t pt-3">
+                             <h3 class="text-base font-medium text-slate-800 mb-2">Order Fees</h3>
+                             <div class="grid grid-cols-1 gap-4 text-base">
+                                <div>
+                                    <label for="order-fee-dollar" class="block text-sm font-medium text-slate-700 mb-1">Fee ($)</label>
+                                    <input type="number" id="order-fee-dollar" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary" min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="summary-discount-row" class="flex justify-between font-medium text-green-600 hidden">
+                            <span>Total Discounts:</span>
+                            <span id="summary-discount-total">-$0.00</span>
+                        </div>
+                         <div id="summary-fees-row" class="flex justify-between font-medium text-red-600 hidden">
+                            <span>Total Fees:</span>
+                            <span id="summary-fees-total">+$0.00</span>
+                        </div>
+                        
+                        <div id="summary-shipping-row" class="flex justify-between text-slate-600 hidden">
+                            <span>Shipping:</span>
+                            <span id="summary-shipping-cost">$0.00</span>
+                        </div>
+                        <div id="summary-packaging-row" class="flex justify-between text-slate-600 hidden">
+                            <span>Packaging:</span>
+                            <span id="summary-packaging-cost">$0.00</span>
+                        </div>
+                        <hr>
+                        <div class="flex justify-between font-bold text-2xl text-theme-primary">
+                            <span>Quote:</span>
+                            <span id="summary-total">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="bg-white p-6 rounded-2xl shadow-lg mt-8">
+            <h2 class="text-2xl font-bold text-slate-900 mb-4">Customer Information & Final Details</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div><label for="contact-name" class="block text-sm font-medium text-slate-700 mb-1">Customer Name</label><input type="text" id="contact-name" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary"></div>
+                <div><label for="customer-company" class="block text-sm font-medium text-slate-700 mb-1">Company (Optional)</label><input type="text" id="customer-company" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary"></div>
+                <div><label for="contact-email" class="block text-sm font-medium text-slate-700 mb-1">Contact Email</label><input type="email" id="contact-email" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary"></div>
+                <div><label for="contact-phone" class="block text-sm font-medium text-slate-700 mb-1">Contact Phone</label><input type="tel" id="contact-phone" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary"></div>
+                
+                <div class="md:col-span-2 border-t pt-4 mt-2">
+                    <h3 class="font-bold text-slate-800 mb-3">Billing Address</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2"><label class="block text-sm font-medium text-slate-700 mb-1">Street Address</label><input type="text" id="billing-street" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary"></div>
+                        <div><label class="block text-sm font-medium text-slate-700 mb-1">City</label><input type="text" id="billing-city" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary"></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-slate-700 mb-1">State</label><input type="text" id="billing-state" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary"></div>
+                            <div><label class="block text-sm font-medium text-slate-700 mb-1">ZIP Code</label><input type="text" id="billing-zip" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2 border-t pt-4 mt-2">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Delivery Method</label>
+                    <div class="flex space-x-6 p-2 border border-slate-300 rounded-md bg-slate-50">
+                        <label class="inline-flex items-center"><input type="radio" name="delivery-method" value="Store Pickup" class="delivery-radio text-theme-primary focus:ring-theme-primary" checked><span class="ml-2">Store Pickup</span></label>
+                        <label class="inline-flex items-center"><input type="radio" name="delivery-method" value="Shipping" class="delivery-radio text-theme-primary focus:ring-theme-primary"><span class="ml-2">Shipping</span></label>
+                    </div>
+                </div>
+
+                <div id="shipping-address-container" class="md:col-span-2 hidden">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-bold text-slate-800">Shipping Address</h3>
+                        <label class="inline-flex items-center text-sm text-slate-600">
+                            <input type="checkbox" id="same-as-billing" class="mr-2 text-theme-primary focus:ring-theme-primary rounded"> Same as Billing
+                        </label>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2"><label class="block text-sm font-medium text-slate-700 mb-1">Street Address</label><input type="text" id="shipping-street" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary"></div>
+                        <div><label class="block text-sm font-medium text-slate-700 mb-1">City</label><input type="text" id="shipping-city" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary"></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-slate-700 mb-1">State</label><input type="text" id="shipping-state" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary"></div>
+                            <div><label class="block text-sm font-medium text-slate-700 mb-1">ZIP Code</label><input type="text" id="shipping-zip" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-4 border-t border-slate-200">
+                        <div><label class="block text-sm font-medium text-slate-700 mb-1">Shipping Cost ($)</label><input type="number" id="shipping-cost" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary" min="0"></div>
+                        <div><label class="block text-sm font-medium text-slate-700 mb-1">Packaging Cost ($)</label><input type="number" id="packaging-cost" class="w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary" min="0"></div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2 text-right pt-4"><button id="submit-order-btn" class="theme-primary text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-theme-primary-dark transition-colors duration-300">Generate Quote PDF</button></div>
+                
+                <div class="md:col-span-2 mt-8 pt-4 border-t border-slate-200 text-center text-sm text-slate-400">
+                    Made by Gradin Dodson
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div id="printable-area" class="printable-area hidden"></div>
+
+    <div id="submission-modal" class="modal-overlay hidden">
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-lg w-full">
+            <h3 id="modal-title" class="text-2xl font-bold text-green-700 mb-4"></h3>
+            <p id="modal-message" class="text-slate-700 mb-6"></p>
+            <button id="modal-close-btn" class="w-full theme-primary text-white font-semibold py-2 rounded-lg hover:bg-theme-primary-dark transition-colors">Close</button>
+        </div>
+    </div>
+
+    <template id="job-item-template">
+        <div class="job-item border border-slate-200 p-4 rounded-xl">
+            <div class="flex justify-between items-start mb-4">
+                <div class="flex-grow grid grid-cols-4 gap-4">
+                     <div class="col-span-1">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">SKU</label>
+                        <input type="text" class="item-sku w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary" placeholder="SKU">
+                     </div>
+                     <div class="col-span-3">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Item Name / Description</label>
+                        <input type="text" class="job-description w-full p-2 border border-slate-300 rounded-md font-semibold focus:ring-theme-primary focus:border-theme-primary" placeholder="Item Name">
+                     </div>
+                </div>
+                <button class="remove-job-btn text-slate-400 hover:text-red-600 ml-4 mt-8">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Unit Price ($)</label>
+                    <input type="number" class="item-price w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary" placeholder="0.00" min="0" step="0.01">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Quantity</label>
+                    <input type="number" class="job-quantity w-full p-2 border border-slate-300 rounded-md focus:ring-theme-primary focus:border-theme-primary" value="1">
+                </div>
+                <div class="col-span-1">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Line Discount</label>
+                    <div class="flex">
+                        <select class="item-discount-type bg-slate-100 border border-r-0 border-slate-300 rounded-l-md px-2 text-sm focus:outline-none">
+                            <option value="percent">%</option>
+                            <option value="dollar">$</option>
+                        </select>
+                        <input type="number" class="item-discount-value w-full p-2 border border-slate-300 rounded-r-md focus:ring-theme-primary focus:border-theme-primary" placeholder="0" min="0">
+                    </div>
+                </div>
+                <div class="text-right pt-8"><span class="text-xl font-bold text-theme-primary item-total">$0.00</span></div>
+            </div>
+        </div>
+    </template>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mainApp = document.getElementById('main-app');
+            const printableArea = document.getElementById('printable-area');
+            const addJobBtn = document.getElementById('add-job-btn');
+            const submitBtn = document.getElementById('submit-order-btn');
+            const closeBtn = document.getElementById('modal-close-btn');
+            const modalEl = document.getElementById('submission-modal');
+            const jobItemsContainer = document.getElementById('job-items-container');
+            const jobItemTemplate = document.getElementById('job-item-template');
+            
+            // Address Elements
+            const shippingAddressContainer = document.getElementById('shipping-address-container');
+            const sameAsBillingCheckbox = document.getElementById('same-as-billing');
+            const billingFields = ['street', 'city', 'state', 'zip'].map(f => document.getElementById(`billing-${f}`));
+            const shippingFields = ['street', 'city', 'state', 'zip'].map(f => document.getElementById(`shipping-${f}`));
+
+            const summarySubtotalEl = document.getElementById('summary-subtotal');
+            const summaryTotalEl = document.getElementById('summary-total');
+            const orderDiscountPercentEl = document.getElementById('order-discount-percent');
+            const orderDiscountDollarEl = document.getElementById('order-discount-dollar');
+            const summaryDiscountRowEl = document.getElementById('summary-discount-row');
+            const summaryDiscountTotalEl = document.getElementById('summary-discount-total');
+            const orderFeeDollarEl = document.getElementById('order-fee-dollar');
+            const summaryFeesRowEl = document.getElementById('summary-fees-row');
+            const summaryFeesTotalEl = document.getElementById('summary-fees-total');
+            const shippingCostEl = document.getElementById('shipping-cost');
+            const packagingCostEl = document.getElementById('packaging-cost');
+            const summaryShippingRowEl = document.getElementById('summary-shipping-row');
+            const summaryShippingCostEl = document.getElementById('summary-shipping-cost');
+            const summaryPackagingRowEl = document.getElementById('summary-packaging-row');
+            const summaryPackagingCostEl = document.getElementById('summary-packaging-cost');
+
+            function formatCurrency(amount) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount); }
+            function formatNumber(amount) { return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+            // Same as Billing Logic
+            sameAsBillingCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    shippingFields.forEach((field, index) => {
+                        field.value = billingFields[index].value;
+                        field.readOnly = true;
+                        field.classList.add('bg-gray-100');
+                    });
+                } else {
+                    shippingFields.forEach(field => {
+                        field.readOnly = false;
+                        field.classList.remove('bg-gray-100');
+                    });
+                }
+            });
+
+            billingFields.forEach((bField, index) => {
+                bField.addEventListener('input', () => {
+                    if (sameAsBillingCheckbox.checked) {
+                        shippingFields[index].value = bField.value;
+                    }
+                });
+            });
+
+            function updateAllCalculations() {
+                const jobItems = jobItemsContainer.querySelectorAll('.job-item');
+                let subtotal = 0; let totalQuantity = 0; let totalDiscount = 0; let totalFees = 0;
+
+                jobItems.forEach((item, index) => {
+                    const price = parseFloat(item.querySelector('.item-price').value) || 0;
+                    const q = parseInt(item.querySelector('.job-quantity').value) || 0;
+                    let itemBaseTotal = price * q;
+
+                    const discType = item.querySelector('.item-discount-type').value;
+                    const discVal = parseFloat(item.querySelector('.item-discount-value').value) || 0;
+                    let lineDiscountAmount = 0;
+
+                    if (discType === 'percent') {
+                        lineDiscountAmount = itemBaseTotal * (discVal / 100);
+                    } else {
+                        lineDiscountAmount = discVal;
+                    }
+                    
+                    if(lineDiscountAmount > itemBaseTotal) lineDiscountAmount = itemBaseTotal;
+                    let itemFinalTotal = itemBaseTotal - lineDiscountAmount;
+                    
+                    item.querySelector('.item-total').textContent = formatCurrency(itemFinalTotal);
+                    subtotal += itemFinalTotal; 
+                    totalQuantity += q;
+                });
+
+                const discP = parseFloat(orderDiscountPercentEl.value) || 0;
+                const discD = parseFloat(orderDiscountDollarEl.value) || 0;
+                totalDiscount = (subtotal * discP / 100) + discD;
+                totalFees = parseFloat(orderFeeDollarEl.value) || 0;
+
+                let shippingCost = 0; let packagingCost = 0;
+                if (document.querySelector('input[name="delivery-method"]:checked').value === 'Shipping') {
+                    shippingCost = parseFloat(shippingCostEl.value) || 0;
+                    packagingCost = parseFloat(packagingCostEl.value) || 0;
+                    summaryShippingRowEl.classList.remove('hidden'); summaryShippingCostEl.textContent = formatCurrency(shippingCost);
+                    summaryPackagingRowEl.classList.toggle('hidden', packagingCost <= 0); summaryPackagingCostEl.textContent = formatCurrency(packagingCost);
+                } else {
+                    summaryShippingRowEl.classList.add('hidden'); summaryPackagingRowEl.classList.add('hidden');
+                }
+
+                summaryDiscountRowEl.classList.toggle('hidden', totalDiscount <= 0); summaryDiscountTotalEl.textContent = `-${formatCurrency(totalDiscount)}`;
+                summaryFeesRowEl.classList.toggle('hidden', totalFees <= 0); summaryFeesTotalEl.textContent = `+${formatCurrency(totalFees)}`;
+                summarySubtotalEl.textContent = formatCurrency(subtotal);
+                summaryTotalEl.textContent = formatCurrency(Math.max(0, subtotal - totalDiscount + totalFees + shippingCost + packagingCost));
+            }
+
+            function createJobItem() {
+                const templateClone = jobItemTemplate.content.cloneNode(true);
+                const jobItemEl = templateClone.querySelector('.job-item');
+                jobItemEl.addEventListener('input', updateAllCalculations);
+                jobItemEl.querySelector('.remove-job-btn').addEventListener('click', () => { jobItemEl.remove(); updateAllCalculations(); });
+                jobItemsContainer.appendChild(jobItemEl);
+            }
+
+            function collectAllData() {
+                const deliveryMethod = document.querySelector('input[name="delivery-method"]:checked').value;
+                const contactInfo = {
+                    name: document.getElementById('contact-name').value,
+                    company: document.getElementById('customer-company').value,
+                    email: document.getElementById('contact-email').value,
+                    phone: document.getElementById('contact-phone').value,
+                    delivery: deliveryMethod,
+                    billing: {
+                        street: document.getElementById('billing-street').value,
+                        city: document.getElementById('billing-city').value,
+                        state: document.getElementById('billing-state').value,
+                        zip: document.getElementById('billing-zip').value
+                    }
+                };
+                
+                let shippingCost = 0; let packagingCost = 0;
+                if (deliveryMethod === 'Shipping') {
+                    contactInfo.shippingStreet = document.getElementById('shipping-street').value;
+                    contactInfo.shippingCity = document.getElementById('shipping-city').value;
+                    contactInfo.shippingState = document.getElementById('shipping-state').value;
+                    contactInfo.shippingZip = document.getElementById('shipping-zip').value;
+                    shippingCost = parseFloat(shippingCostEl.value) || 0;
+                    packagingCost = parseFloat(packagingCostEl.value) || 0;
+                }
+
+                const jobItemsData = [];
+                let subtotal = 0; let totalDiscount = 0;
+                const jobItems = jobItemsContainer.querySelectorAll('.job-item');
+
+                jobItems.forEach((item, index) => {
+                    const price = parseFloat(item.querySelector('.item-price').value) || 0;
+                    const quantity = parseInt(item.querySelector('.job-quantity').value) || 0;
+                    const baseTotal = price * quantity;
+                    
+                    const discType = item.querySelector('.item-discount-type').value;
+                    const discVal = parseFloat(item.querySelector('.item-discount-value').value) || 0;
+                    let discountAmt = 0;
+                    let discountText = "";
+
+                    if(discVal > 0) {
+                        if (discType === 'percent') {
+                            discountAmt = baseTotal * (discVal / 100);
+                            discountText = `(Disc: ${discVal}%)`;
+                        } else {
+                            discountAmt = discVal;
+                            discountText = `(Disc: -$${discVal})`;
+                        }
+                    }
+                    if(discountAmt > baseTotal) discountAmt = baseTotal;
+                    const finalTotal = baseTotal - discountAmt;
+                    subtotal += finalTotal;
+                    
+                    jobItemsData.push({
+                        sku: item.querySelector('.item-sku').value.trim() || 'N/A',
+                        description: item.querySelector('.job-description').value.trim() || `Item #${index + 1}`,
+                        price: formatNumber(price),
+                        quantity: quantity.toLocaleString('en-US'),
+                        discountText: discountText,
+                        itemTotal: formatNumber(finalTotal),
+                    });
+                });
+
+                const discP = parseFloat(orderDiscountPercentEl.value) || 0;
+                const discD = parseFloat(orderDiscountDollarEl.value) || 0;
+                totalDiscount = (subtotal * discP / 100) + discD;
+                const totalFees = parseFloat(orderFeeDollarEl.value) || 0;
+                const total = Math.max(0, subtotal - totalDiscount + totalFees + shippingCost + packagingCost);
+
+                return {
+                    contact: contactInfo,
+                    jobs: jobItemsData,
+                    summary: {
+                        subtotal: formatNumber(subtotal),
+                        shippingCost: formatNumber(shippingCost),
+                        packagingCost: formatNumber(packagingCost),
+                        total: formatNumber(total),
+                        totalDiscount: formatNumber(totalDiscount),
+                        totalFees: formatNumber(totalFees),
+                    }
+                };
+            }
+
+            function generatePrintableHTML(data) {
+                let jobDetails = data.jobs.map((job, index) => {
+                    return `
+                    <div style="border-bottom: 1px solid #e2e8f0; padding: 0.5rem 0; page-break-inside: avoid;">
+                        <div style="display:flex; justify-content: space-between; font-weight: bold; font-size: 1rem; color: #1e293b;">
+                            <span>${job.description}</span>
+                            <span>$${job.itemTotal}</span>
+                        </div>
+                        <div style="font-size: 0.85rem; color: #64748b; margin-top: 2px;">
+                            SKU: ${job.sku} | Qty: ${job.quantity} @ $${job.price}/ea <span style="color:#16a34a; margin-left:5px;">${job.discountText}</span>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+                
+                if (data.jobs.length === 0) jobDetails = '<p style="color: #64748b;">No items added.</p>';
+
+                let costSummaryHtml = `
+                    <div style="display: flex; justify-content: space-between;"><span>Subtotal:</span><span>$${data.summary.subtotal}</span></div>
+                `;
+                if(parseFloat(data.summary.totalDiscount.replace(/,/g, '')) > 0) {
+                    costSummaryHtml += `<div style="display: flex; justify-content: space-between; color: #16a34a;"><span>Discounts:</span><span>-$${data.summary.totalDiscount}</span></div>`;
+                }
+                if(parseFloat(data.summary.totalFees.replace(/,/g, '')) > 0) {
+                    costSummaryHtml += `<div style="display: flex; justify-content: space-between; color: #dc2626;"><span>Fees:</span><span>+$${data.summary.totalFees}</span></div>`;
+                }
+                if(parseFloat(data.summary.shippingCost.replace(/,/g, '')) > 0) {
+                    costSummaryHtml += `<div style="display: flex; justify-content: space-between;"><span>Shipping:</span><span>$${data.summary.shippingCost}</span></div>`;
+                }
+                if(parseFloat(data.summary.packagingCost.replace(/,/g, '')) > 0) {
+                    costSummaryHtml += `<div style="display: flex; justify-content: space-between;"><span>Packaging:</span><span>$${data.summary.packagingCost}</span></div>`;
+                }
+
+                const customerName = data.contact.name || 'N/A';
+                
+                let addressHtml = `<div style="margin-top: 0.5rem; font-size: 0.9rem; color: #334155;">`;
+                addressHtml += `<p><strong>Bill To:</strong> ${data.contact.billing.street}, ${data.contact.billing.city}, ${data.contact.billing.state} ${data.contact.billing.zip}</p>`;
+                
+                if(data.contact.delivery === 'Shipping') {
+                    addressHtml += `<p style="margin-top:4px;"><strong>Ship To:</strong> ${data.contact.shippingStreet}, ${data.contact.shippingCity}, ${data.contact.shippingState} ${data.contact.shippingZip}</p>`;
+                } else {
+                    addressHtml += `<p style="margin-top:4px;"><strong>Method:</strong> Store Pickup</p>`;
+                }
+                addressHtml += `</div>`;
+
+                const printDate = new Date().toLocaleString();
+
+                return `
+                    <div style="padding: 2rem; max-width: 800px; margin: 0 auto; font-family: 'Inter', sans-serif;">
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 10px;">Printed: ${printDate}</div>
+                        <div style="text-align: center; margin-bottom: 2rem;">
+                            <h2 style="font-size: 1.2rem; color: #1e293b; font-weight: bold; margin-bottom: 0.5rem;">The UPS Store #4066</h2>
+                            <div style="font-size: 0.9rem; color: #475569; line-height: 1.4;">
+                                <p>1442 S Winchester Blvd, San Jose, CA 95128</p>
+                                <p>store4066@theupsstore.com | Ph: (408) 429-8009 | Fax: (408) 429-8787</p>
+                            </div>
+                        </div>
+
+                        <div style="border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1rem; font-size: 0.9rem;">
+                            <p><strong>Customer:</strong> ${customerName} ${data.contact.company ? '('+data.contact.company+')' : ''}</p>
+                            <p><strong>Email:</strong> ${data.contact.email || 'N/A'} | <strong>Phone:</strong> ${data.contact.phone || 'N/A'}</p>
+                            ${addressHtml}
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <h3 style="font-size: 1.1rem; font-weight: bold; color: #2563eb; border-bottom: 2px solid #2563eb; margin-bottom: 0.5rem;">Items</h3>
+                            ${jobDetails}
+                        </div>
+                        <div style="margin-top: 1rem; border-top: 2px solid #2563eb; padding-top: 0.5rem;">
+                            ${costSummaryHtml}
+                            <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.4rem; margin-top: 0.5rem; color: #2563eb;">
+                                <span>TOTAL:</span><span>$${data.summary.total}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 2rem; font-size: 0.85rem; color: #334155; margin-bottom: 2rem;">
+                            <p>By signing below, I approve this quote and authorize The UPS Store #4066 to proceed with the order. I understand that this estimate is based on the information provided and is valid for 5 days. Sales tax is not included.</p>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; page-break-inside: avoid;">
+                            <div style="width: 60%; border-top: 1px solid #000; padding-top: 0.5rem;">
+                                <p style="font-size: 0.9rem; font-weight: bold;">Customer Signature</p>
+                            </div>
+                            <div style="width: 30%; padding-top: 0.5rem;">
+                                <p style="font-size: 0.9rem; font-weight: bold;">Date: <span style="font-weight: normal;">${new Date().toLocaleDateString()}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function handleSubmission() {
+                const orderData = collectAllData();
+                printableArea.innerHTML = generatePrintableHTML(orderData);
+                mainApp.classList.add('hidden');
+                printableArea.classList.remove('hidden');
+                setTimeout(() => {
+                    window.print();
+                    setTimeout(() => {
+                        mainApp.classList.remove('hidden');
+                        printableArea.classList.add('hidden');
+                        modalEl.classList.remove('hidden');
+                        document.getElementById('modal-title').textContent = "PDF Generation";
+                        document.getElementById('modal-message').textContent = "Please save as PDF.";
+                    }, 500); 
+                }, 100); 
+            }
+
+            addJobBtn.addEventListener('click', createJobItem);
+            submitBtn.addEventListener('click', handleSubmission);
+            closeBtn.addEventListener('click', () => { modalEl.classList.add('hidden'); });
+            
+            document.querySelectorAll('.delivery-radio').forEach(r => r.addEventListener('change', (e) => {
+                shippingAddressContainer.classList.toggle('hidden', e.target.value !== 'Shipping');
+                updateAllCalculations();
+            }));
+            
+            shippingCostEl.addEventListener('input', updateAllCalculations);
+            packagingCostEl.addEventListener('input', updateAllCalculations);
+            orderDiscountPercentEl.addEventListener('input', updateAllCalculations);
+            orderDiscountDollarEl.addEventListener('input', updateAllCalculations);
+            orderFeeDollarEl.addEventListener('input', updateAllCalculations);
+
+            createJobItem();
+        });
+    </script>
+</body>
+</html>
