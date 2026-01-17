@@ -14,24 +14,55 @@
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             margin: 0; padding: 0; background: #e9ecef; height: 100vh; display: flex; overflow: hidden; 
+            position: relative;
         }
+
+        /* --- HOME BUTTON STYLE --- */
+        .home-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 1001; /* Ensure it stays above the control panel */
+            transition: background 0.2s;
+        }
+
+        .home-button:hover {
+            background-color: #0056b3;
+        }
+
         .main-content { display: flex; flex: 1; width: 100%; height: 100%; }
+        
         .controls-panel { 
             width: 380px; padding: 20px; background: white; border-right: 1px solid #ccc; 
             box-shadow: 2px 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; z-index: 10; overflow-y: auto; 
         }
+
         .preview-panel { 
             flex: 1; background: #525659; padding: 20px; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; 
         }
+
         iframe { 
             width: 400px; height: 600px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.3); background: white; 
         }
+
         .mode-switch {
-            display: flex; background: #f1f3f5; padding: 4px; border-radius: 8px; margin-bottom: 20px;
+            display: flex; background: #f1f3f5; padding: 4px; border-radius: 8px; 
+            margin-bottom: 20px; 
+            margin-top: 45px; /* Added margin to clear space for the Home button */
         }
+
         .mode-switch label {
             flex: 1; text-align: center; padding: 8px; cursor: pointer; border-radius: 6px; font-size: 14px; font-weight: 600; color: #555; transition: 0.2s;
         }
+
         .mode-switch input { display: none; }
         .mode-switch input:checked + label { background: white; color: #007bff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .input-group { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
@@ -47,9 +78,15 @@
         .btn-clear { background: white; color: #dc3545; border: 2px solid #f8f9fa; } .btn-clear:hover { background: #fff5f5; border-color: #dc3545; }
         #genCanvas { display: none; }
         .hidden { display: none !important; }
+
+        @media print {
+            .home-button, .controls-panel { display: none; }
+        }
     </style>
 </head>
 <body>
+
+<a href="https://ups4066.com/" class="home-button">Home</a>
 
 <div class="main-content">
     <div class="controls-panel">
@@ -150,7 +187,6 @@
         const printableHeight = 6 - (MARGIN_TOP + MARGIN_BOTTOM);
 
         if (currentMode === 'standard') {
-            // === STANDARD MODE (15 TAGS) ===
             const name = document.getElementById('stdName').value.trim();
             const rawPrice = document.getElementById('stdPrice').value.trim();
             const sku = document.getElementById('stdSku').value.trim();
@@ -175,7 +211,6 @@
                 col++; if (col >= cols) { col = 0; row++; }
             }
         } else {
-            // === SHELF MODE (4 TAGS) ===
             const cols = 1; const rows = 4;
             const tagWidth = printableWidth / cols; const tagHeight = printableHeight / rows;
             let hasData = false;
@@ -233,30 +268,18 @@
         const doc = createFullSheetPDF();
         if (doc) {
             let filename = "Tags.pdf";
-
-            // === FILENAME LOGIC (Price-SKU with dash for decimal) ===
             if (currentMode === 'standard') {
                 const sku = document.getElementById('stdSku').value.trim();
                 const rawPrice = document.getElementById('stdPrice').value.trim();
-                
                 let priceStr = "";
                 const cleanVal = rawPrice.replace(/,/g, '');
                 const numPrice = parseFloat(cleanVal);
-                
                 if (!isNaN(numPrice)) { 
-                    // 1250.00 -> "1250-00"
                     let tempStr = numPrice.toFixed(2);
                     priceStr = tempStr.replace('.', '-');
                 }
-
-                if (sku && priceStr) {
-                    // e.g. 1250-00_10020030.pdf
-                    filename = `${priceStr}_${sku}.pdf`;
-                }
-            } else {
-                filename = "Shelf_Tags.pdf";
-            }
-
+                if (sku && priceStr) { filename = `${priceStr}_${sku}.pdf`; }
+            } else { filename = "Shelf_Tags.pdf"; }
             doc.save(filename);
         } else { alert("Please enter item details first."); }
     }
