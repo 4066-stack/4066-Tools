@@ -6,8 +6,9 @@
     <title>The UPS Store #4066 Web Tools</title>
     <style>
         :root {
-            --ups-brown: #351C15;
-            --ups-gold: #FFB500;
+            /* Updated to Modern Blue Palette */
+            --theme-primary: #2563eb; /* Royal Blue */
+            --theme-primary-dark: #1d4ed8;
             --bg-color: #f3f4f6;
             --card-bg: #ffffff;
         }
@@ -34,8 +35,8 @@
         }
 
         .header {
-            background-color: var(--ups-brown);
-            color: var(--ups-gold);
+            background-color: var(--theme-primary);
+            color: white;
             padding: 30px 20px;
         }
 
@@ -58,8 +59,8 @@
             display: block;
             text-decoration: none;
             background-color: white;
-            color: var(--ups-brown);
-            border: 2px solid var(--ups-brown);
+            color: var(--theme-primary);
+            border: 2px solid var(--theme-primary);
             padding: 15px;
             border-radius: 8px;
             font-weight: 700;
@@ -69,7 +70,7 @@
         }
 
         .tool-link:hover {
-            background-color: var(--ups-brown);
+            background-color: var(--theme-primary);
             color: white;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
@@ -97,7 +98,7 @@
         }
 
         .contact-info a {
-            color: var(--ups-brown);
+            color: var(--theme-primary);
             text-decoration: none;
             font-weight: 600;
         }
@@ -133,6 +134,10 @@
             
             <a href="https://ups4066.com/wideformatprint" class="tool-link">
                 🖨️ Wide Format Price Tool
+            </a>
+
+            <a href="https://ups4066.com/generalquote" class="tool-link">
+                📝 General Quote Calculator
             </a>
         </div>
 
