@@ -19,10 +19,9 @@
             align-items: center;
             padding: 20px;
             margin: 0;
-            position: relative; /* Added to allow absolute positioning of the home button */
+            position: relative;
         }
 
-        /* --- HOME BUTTON STYLE --- */
         .home-button {
             position: absolute;
             top: 20px;
@@ -42,7 +41,6 @@
             background-color: #0056b3;
         }
 
-        /* --- INPUT CONTROLS --- */
         .controls {
             background: white;
             padding: 20px;
@@ -94,7 +92,6 @@
             margin-right: auto;
         }
 
-        /* --- LABEL DESIGN --- */
         .label-container {
             width: var(--label-width);
             height: var(--label-height);
@@ -186,7 +183,6 @@
             min-height: 15px;
         }
 
-        /* --- PRINT SETTINGS --- */
         @media print {
             @page {
                 size: 4in 6in;
@@ -201,7 +197,7 @@
             }
 
             .controls, .home-button {
-                display: none; /* Hidden the home button during print */
+                display: none;
             }
 
             .label-container {
@@ -240,6 +236,8 @@
         <div class="limit-text" id="reasonCount">0 / 120 characters</div>
         
         <button onclick="window.print()">Print Label</button>
+        
+        <div style="margin-top: 15px; font-size: 11px; color: #999;">Made by Gradin Dodson</div>
     </div>
 
     <div class="label-container">
