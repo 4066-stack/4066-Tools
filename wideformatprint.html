@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Wide Format Printing Quote Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,20 +12,20 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* UPS Brand Colors */
-        .ups-brown { background-color: #351C15; }
-        .ups-gold { background-color: #FFB500; }
-        .text-ups-brown { color: #351C15; }
-        .text-ups-gold { color: #FFB500; }
-        .border-ups-brown { border-color: #351C15; }
-        .hover\:bg-ups-brown-dark:hover { background-color: #2a1610; }
+        /* Modern Blue Brand Colors */
+        .ups-brown { background-color: #2563eb; } /* Royal Blue */
+        .ups-gold { background-color: #2563eb; }
+        .text-ups-brown { color: #2563eb; }
+        .text-ups-gold { color: #2563eb; }
+        .border-ups-brown { border-color: #2563eb; }
+        .hover\:bg-ups-brown-dark:hover { background-color: #1d4ed8; } /* Darker Blue */
 
         /* --- HOME BUTTON STYLE --- */
         .home-button {
             position: fixed;
             top: 20px;
             left: 20px;
-            background-color: #007bff;
+            background-color: #2563eb;
             color: white;
             padding: 10px 20px;
             text-decoration: none;
@@ -39,24 +38,10 @@
         }
 
         .home-button:hover {
-            background-color: #0056b3;
+            background-color: #1d4ed8;
             color: white;
         }
 
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 400px;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
-            }
-        }
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -82,7 +67,7 @@
             align-items: center;
             z-index: 50;
         }
-        /* PRINT STYLES: Hides the main app and shows the printable area for PDF generation */
+        /* PRINT STYLES */
         @media print {
             .main-app, .home-button {
                 display: none !important;
@@ -129,7 +114,7 @@
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-bold text-slate-900">Build Your Quote</h2>
                     <button id="add-job-btn" class="ups-brown text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-ups-brown-dark transition-colors duration-300 flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                         Add Job
                     </button>
                 </div>
@@ -140,11 +125,9 @@
             <div class="lg:col-span-2 space-y-8">
                 <div class="bg-white p-6 rounded-2xl shadow-lg">
                     <h2 class="text-2xl font-bold text-slate-900 mb-4 text-center">Quote Summary</h2>
-                     <p class="text-sm text-slate-500 mb-4 text-center">This section provides a real-time calculation of print job costs. The chart below visualizes the cost distribution, helping you build a quote at a glance.</p>
-                    <div class="chart-container mb-6">
-                        <canvas id="cost-breakdown-chart"></canvas>
-                    </div>
-                    <div class="space-y-3 text-lg">
+                     <p class="text-sm text-slate-500 mb-4 text-center">This section provides a real-time calculation of print job costs.</p>
+                    
+                    <div class="space-y-3 text-lg mt-6">
                         <div class="flex justify-between font-medium">
                             <span>Subtotal:</span>
                             <span id="summary-subtotal">$0.00</span>
@@ -163,18 +146,13 @@
                         
                         <div class="border-t pt-3">
                              <h3 class="text-base font-medium text-slate-800 mb-2">Order Fees</h3>
-                             <div class="grid grid-cols-2 gap-4 text-base">
-                                <div>
-                                    <label for="order-fee-description" class="block text-sm font-medium text-slate-700 mb-1">Fee Description</label>
-                                    <input type="text" id="order-fee-description" class="w-full p-2 border border-slate-300 rounded-md" placeholder="e.g., Setup Fee">
-                                </div>
+                             <div class="grid grid-cols-1 gap-4 text-base">
                                 <div>
                                     <label for="order-fee-dollar" class="block text-sm font-medium text-slate-700 mb-1">Fee ($)</label>
                                     <input type="number" id="order-fee-dollar" class="w-full p-2 border border-slate-300 rounded-md" min="0">
                                 </div>
                             </div>
                         </div>
-
 
                         <div id="summary-discount-row" class="flex justify-between font-medium text-green-600 hidden">
                             <span>Total Discounts:</span>
@@ -227,33 +205,33 @@
             <h2 class="text-2xl font-bold text-slate-900 mb-4">Customer Information & Final Details</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div><label for="contact-name" class="block text-sm font-medium text-slate-700 mb-1">Customer Name</label><input type="text" id="contact-name" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="name"></div>
-                <div><label for="customer-company" class="block text-sm font-medium text-slate-700 mb-1">Company / Organization (Optional)</label><input type="text" id="customer-company" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="organization"></div>
-                <div><label for="contact-email" class="block text-sm font-medium text-slate-700 mb-1">Contact Email</label><input type="email" id="contact-email" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="email"></div>
-                <div><label for="contact-phone" class="block text-sm font-medium text-slate-700 mb-1">Contact Phone</label><input type="tel" id="contact-phone" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="tel"></div>
+                <div><label for="contact-name" class="block text-sm font-medium text-slate-700 mb-1">Customer Name</label><input type="text" id="contact-name" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#2563eb] focus:border-[#2563eb]" autocomplete="name"></div>
+                <div><label for="customer-company" class="block text-sm font-medium text-slate-700 mb-1">Company / Organization (Optional)</label><input type="text" id="customer-company" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#2563eb] focus:border-[#2563eb]" autocomplete="organization"></div>
+                <div><label for="contact-email" class="block text-sm font-medium text-slate-700 mb-1">Contact Email</label><input type="email" id="contact-email" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#2563eb] focus:border-[#2563eb]" autocomplete="email"></div>
+                <div><label for="contact-phone" class="block text-sm font-medium text-slate-700 mb-1">Contact Phone</label><input type="tel" id="contact-phone" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#2563eb] focus:border-[#2563eb]" autocomplete="tel"></div>
                 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-slate-700 mb-1">Delivery Method</label>
                     <div class="flex space-x-6 p-2 border border-slate-300 rounded-md bg-slate-50">
                         <label class="inline-flex items-center">
-                            <input type="radio" name="delivery-method" id="delivery-pickup" value="Store Pickup" class="delivery-radio text-[#351C15] focus:ring-[#FFB500]" checked>
+                            <input type="radio" name="delivery-method" id="delivery-pickup" value="Store Pickup" class="delivery-radio text-[#2563eb] focus:ring-[#2563eb]" checked>
                             <span class="ml-2 text-slate-700">Store Pickup</span>
                         </label>
                         <label class="inline-flex items-center">
-                            <input type="radio" name="delivery-method" id="delivery-shipping" value="Shipping" class="delivery-radio text-[#351C15] focus:ring-[#FFB500]">
+                            <input type="radio" name="delivery-method" id="delivery-shipping" value="Shipping" class="delivery-radio text-[#2563eb] focus:ring-[#2563eb]">
                             <span class="ml-2 text-slate-700">Shipping</span>
                         </label>
                     </div>
                 </div>
 
                 <div id="shipping-address-container" class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
-                    <div><label for="shipping-street" class="block text-sm font-medium text-slate-700 mb-1">Street Address</label><input type="text" id="shipping-street" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="street-address"></div>
-                    <div><label for="shipping-city" class="block text-sm font-medium text-slate-700 mb-1">City</label><input type="text" id="shipping-city" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="address-level2"></div>
-                    <div><label for="shipping-state" class="block text-sm font-medium text-slate-700 mb-1">State</label><input type="text" id="shipping-state" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="address-level1"></div>
-                    <div><label for="shipping-zip" class="block text-sm font-medium text-slate-700 mb-1">ZIP Code</label><input type="text" id="shipping-zip" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" autocomplete="postal-code"></div>
+                    <div><label for="shipping-street" class="block text-sm font-medium text-slate-700 mb-1">Street Address</label><input type="text" id="shipping-street" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#2563eb] focus:border-[#2563eb]" autocomplete="street-address"></div>
+                    <div><label for="shipping-city" class="block text-sm font-medium text-slate-700 mb-1">City</label><input type="text" id="shipping-city" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#2563eb] focus:border-[#2563eb]" autocomplete="address-level2"></div>
+                    <div><label for="shipping-state" class="block text-sm font-medium text-slate-700 mb-1">State</label><input type="text" id="shipping-state" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#2563eb] focus:border-[#2563eb]" autocomplete="address-level1"></div>
+                    <div><label for="shipping-zip" class="block text-sm font-medium text-slate-700 mb-1">ZIP Code</label><input type="text" id="shipping-zip" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#2563eb] focus:border-[#2563eb]" autocomplete="postal-code"></div>
                     <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div><label for="shipping-cost" class="block text-sm font-medium text-slate-700 mb-1">Shipping Cost ($)</label><input type="number" id="shipping-cost" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" min="0" placeholder="Enter shipping cost"></div>
-                        <div><label for="packaging-cost" class="block text-sm font-medium text-slate-700 mb-1">Packaging Cost ($)</label><input type="number" id="packaging-cost" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#351C15] focus:border-[#351C15]" min="0" placeholder="Enter packaging cost"></div>
+                        <div><label for="shipping-cost" class="block text-sm font-medium text-slate-700 mb-1">Shipping Cost ($)</label><input type="number" id="shipping-cost" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#2563eb] focus:border-[#2563eb]" min="0" placeholder="Enter shipping cost"></div>
+                        <div><label for="packaging-cost" class="block text-sm font-medium text-slate-700 mb-1">Packaging Cost ($)</label><input type="number" id="packaging-cost" class="w-full p-2 border border-slate-300 rounded-md focus:ring-[#2563eb] focus:border-[#2563eb]" min="0" placeholder="Enter packaging cost"></div>
                     </div>
                 </div>
 
@@ -269,7 +247,7 @@
     </div>
 
     <div id="printable-area" class="printable-area hidden">
-        </div>
+    </div>
 
     <div id="submission-modal" class="modal-overlay hidden">
         <div class="bg-white p-8 rounded-xl shadow-2xl max-w-lg w-full transform transition-all">
@@ -320,11 +298,11 @@
                 <label class="block text-sm font-medium text-slate-700 mb-2">Orientation</label>
                 <div class="flex space-x-6">
                     <label class="inline-flex items-center">
-                        <input type="radio" class="job-orientation-radio text-[#351C15] focus:ring-[#FFB500]" name="orientation-group" value="Portrait" checked>
+                        <input type="radio" class="job-orientation-radio text-[#2563eb] focus:ring-[#2563eb]" name="orientation-group" value="Portrait" checked>
                         <span class="ml-2 text-slate-700">Portrait</span>
                     </label>
                     <label class="inline-flex items-center">
-                        <input type="radio" class="job-orientation-radio text-[#351C15] focus:ring-[#FFB500]" name="orientation-group" value="Landscape">
+                        <input type="radio" class="job-orientation-radio text-[#2563eb] focus:ring-[#2563eb]" name="orientation-group" value="Landscape">
                         <span class="ml-2 text-slate-700">Landscape</span>
                     </label>
                 </div>
@@ -358,7 +336,6 @@
             const summaryDiscountTotalEl = document.getElementById('summary-discount-total');
             
             const orderFeeDollarEl = document.getElementById('order-fee-dollar');
-            const orderFeeDescriptionEl = document.getElementById('order-fee-description');
             const summaryFeesRowEl = document.getElementById('summary-fees-row');
             const summaryFeesTotalEl = document.getElementById('summary-fees-total');
 
@@ -369,62 +346,8 @@
             const summaryPackagingRowEl = document.getElementById('summary-packaging-row');
             const summaryPackagingCostEl = document.getElementById('summary-packaging-cost');
 
-
-            const ctx = document.getElementById('cost-breakdown-chart').getContext('2d');
-            let costChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        data: [],
-                        backgroundColor: ['#351C15', '#FFB500', '#6b7280', '#d1d5db', '#9ca3af', '#4b5563'],
-                        borderColor: '#ffffff',
-                        borderWidth: 2,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 15,
-                                font: {
-                                     size: 14
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed !== null) {
-                                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed);
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
             function formatCurrency(amount) {
                 return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-            }
-
-            function updateChart(labels, data) {
-                if(labels.length === 0) {
-                    labels.push('No items yet');
-                    data.push(1);
-                }
-                costChart.data.labels = labels;
-                costChart.data.datasets[0].data = data;
-                costChart.update();
             }
 
             function getPrices() {
@@ -447,7 +370,7 @@
                 document.querySelectorAll('.job-item').forEach(jobItem => {
                     const materialSelect = jobItem.querySelector('.job-material');
                     const selectedValue = materialSelect.value;
-                    materialSelect.innerHTML = ''; // Clear existing options
+                    materialSelect.innerHTML = '';
 
                     wideFormatMaterials.forEach(material => {
                         const option = document.createElement('option');
@@ -470,9 +393,6 @@
                 let totalDiscount = 0;
                 let totalFees = 0;
                 
-                const chartLabels = [];
-                const chartData = [];
-
                 const prices = getPrices();
 
                 jobItems.forEach((item, index) => {
@@ -489,11 +409,6 @@
                     item.querySelector('.item-total').textContent = formatCurrency(itemTotal);
                     subtotal += itemTotal;
                     totalQuantity += quantity;
-                    
-                    if (itemTotal > 0) {
-                        chartLabels.push(description);
-                        chartData.push(itemTotal);
-                    }
                 });
 
                 let subtotalAfterDiscounts = subtotal;
@@ -552,9 +467,6 @@
 
                 summarySubtotalEl.textContent = formatCurrency(subtotal);
                 summaryTotalEl.textContent = formatCurrency(total);
-                if(document.getElementById('summary-tax')) document.getElementById('summary-tax').style.display = 'none';
-                
-                updateChart(chartLabels, chartData);
             }
 
             function createJobItem() {
@@ -692,7 +604,7 @@
                                 <td style="padding: 0.25rem;" colspan="2"><span style="font-weight: 500;">Orientation:</span> ${job.orientation}</td> 
                             </tr>
                             <tr>
-                                <td colspan="2" style="text-align: right; font-weight: bold; font-size: 1.25rem; color: #351C15; padding-top: 0.5rem; border-top: 1px solid #e2e8f0; margin-top: 0.5rem;">Job Cost: $${job.itemTotal}</td>
+                                <td colspan="2" style="text-align: right; font-weight: bold; font-size: 1.25rem; color: #2563eb; padding-top: 0.5rem; border-top: 1px solid #e2e8f0; margin-top: 0.5rem;">Job Cost: $${job.itemTotal}</td>
                             </tr>
                         </table>
                     </div>
@@ -758,8 +670,8 @@
 
                 let html = `
                     <div style="padding: 2rem; max-width: 800px; margin: 0 auto; font-family: 'Inter', sans-serif;">
-                        <h1 style="font-size: 1.875rem; font-weight: bold; margin-bottom: 0.25rem; text-align: center; color: #351C15;">WIDE FORMAT PRINTING QUOTE</h1>
-                        <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; text-align: center; color: #351C15;">The UPS Store #4066</h2>
+                        <h1 style="font-size: 1.875rem; font-weight: bold; margin-bottom: 0.25rem; text-align: center; color: #2563eb;">WIDE FORMAT PRINTING QUOTE</h1>
+                        <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; text-align: center; color: #2563eb;">The UPS Store #4066</h2>
                         <div style="text-align: center; color: #475569; margin-bottom: 1rem; line-height: 1.5;">
                             <p>1442 S Winchester Blvd, San Jose, CA 95128</p>
                             <p>store4066@theupsstore.com | ☎️ (408) 429-8009 | 📠 (408) 429-8787</p>
@@ -767,7 +679,7 @@
                         <p style="font-size: 1rem; color: #475569; margin-bottom: 2rem; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 1rem;">Quote For: ${customerName} ${customerCompany} | Total Prints: ${data.summary.totalQuantity} | Generated on: ${new Date().toLocaleString()}</p>
                         
                         <div style="margin-bottom: 2rem; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 0.75rem; background-color: #f8fafc; page-break-inside: avoid;">
-                            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; color: #351C15;">CUSTOMER & QUOTE INFORMATION</h2>
+                            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; color: #2563eb;">CUSTOMER & QUOTE INFORMATION</h2>
                             
                             <table style="width: 100%; border-collapse: collapse; margin-bottom: 0.75rem;">
                                 <tr>
@@ -787,21 +699,21 @@
                         
                         ${data.contact.delivery === 'Shipping' ? `
                         <div style="margin-bottom: 2rem; page-break-inside: avoid;">
-                             <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; color: #351C15;">SHIPPING LABEL</h2>
+                             <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; color: #2563eb;">SHIPPING LABEL</h2>
                              <div style="border: 2px dashed #ccc; width: 6in; height: 4in; padding: 0.5rem; margin: 0 auto;"></div>
                         </div>
                         ` : ''}
 
                         <div style="margin-bottom: 2rem;">
-                            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; color: #351C15;">JOB DETAILS</h2>
+                            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; color: #2563eb;">JOB DETAILS</h2>
                             ${jobDetails}
                         </div>
 
-                        <div style="border: 3px solid #351C15; padding: 1.5rem; border-radius: 0.75rem; background-color: #f8fafc; page-break-inside: avoid;">
-                            <h2 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem; color: #351C15;">TOTAL COST SUMMARY</h2>
+                        <div style="border: 3px solid #2563eb; padding: 1.5rem; border-radius: 0.75rem; background-color: #f8fafc; page-break-inside: avoid;">
+                            <h2 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem; color: #2563eb;">TOTAL COST SUMMARY</h2>
                             <div style="font-size: 1.125rem; line-height: 1.75rem;">
                                 ${costSummaryHtml}
-                                <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.5rem; border-top: 4px double #351C15; padding-top: 0.75rem; color: #351C15;">
+                                <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.5rem; border-top: 4px double #2563eb; padding-top: 0.75rem; color: #2563eb;">
                                     <span>QUOTE:</span>
                                     <span>$${data.summary.total}</span>
                                 </div>
@@ -833,7 +745,9 @@
                     setTimeout(() => {
                         mainApp.classList.remove('hidden');
                         printableArea.classList.add('hidden');
-                        showModal(`Quote PDF Generation Started`, `Please use your browser's print dialog and select **"Save as PDF"** as the destination to generate and save the final quote file.`);
+                        modalEl.classList.remove('hidden');
+                        document.getElementById('modal-title').textContent = "PDF Generation";
+                        document.getElementById('modal-message').textContent = "Please save as PDF.";
                     }, 500); 
 
                 }, 100); 
@@ -863,7 +777,6 @@
             orderDiscountPercentEl.addEventListener('input', updateAllCalculations);
             orderDiscountDollarEl.addEventListener('input', updateAllCalculations);
             orderFeeDollarEl.addEventListener('input', updateAllCalculations);
-            orderFeeDescriptionEl.addEventListener('input', updateAllCalculations);
 
 
             createJobItem();
