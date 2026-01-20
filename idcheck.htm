@@ -71,12 +71,16 @@
         }
 
         iframe { 
-            width: 4in; 
-            height: 6in; 
+            /* CHANGE 1: Use larger pixel/viewport units instead of 'in' */
+            width: 450px; /* Equivalent to roughly 4.7 inches, naturally bigger */
+            height: 675px; /* Keeps the 4:6 aspect ratio */
+            
             border: none; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
             background: white; 
-            transform: scale(1.1); 
+            
+            /* CHANGE 2: REMOVE THIS LINE ENTIRELY */
+            /* transform: scale(1.1); */
         }
 
         /* --- GUI ELEMENTS --- */
@@ -420,3 +424,4 @@
 
 </body>
 </html>
+
