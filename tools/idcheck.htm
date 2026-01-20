@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ID Decoder (B&W PDF)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        /* --- LAYOUT STYLES --- */
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; padding: 0; 
+            background: #e9ecef; 
+            height: 100vh; 
+            display: flex; 
+            overflow: hidden; 
+        }
+
+        /* --- HOME BUTTON STYLES --- */
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: background 0.2s;
+        }
+
+        .home-button:hover {
+            background-color: #1d4ed8;
+        }
+
+        @media print {
+            .home-button { display: none; }
+        }
+
+        .main-content { display: flex; flex: 1; width: 100%; height: 100%; }
+
+        /* Left Panel */
+        .controls-panel { 
+            width: 450px; 
+            /* Top padding increased to 4.5rem to clear the Home button */
+            padding: 4.5rem 2rem 2rem 2rem; 
+            background: white; 
+            border-right: 1px solid #ccc; 
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1); 
+            display: flex; 
+            flex-direction: column; 
+            z-index: 10; 
+            overflow-y: auto; 
+        }
+
+        /* Right Panel */
+        .preview-panel { 
+            flex: 1; 
+            background: #525659; 
+            padding: 20px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+
+        /* FIX FOR BLURRY TEXT: Use explicit pixels instead of transform scale */
+        iframe { 
+            width: 450px; 
+            height: 675px; 
+            border: none; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
+            background: white; 
+        }
+
+        /* --- GUI ELEMENTS --- */
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --text: #1e293b;
+        }
+
+        h1 { margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem; color: var(--primary); }
+        label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text); }
+        
+        textarea {
+            width: 100%; height: 80px; padding: 10px;
+            border: 1px solid #cbd5e1; border-radius: 8px;
+            font-family: monospace; font-size: 0.85rem;
+            resize: vertical; margin-bottom: 15px;
+        }
+        
+        textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
+
+        button {
+            border: none; padding: 12px; border-radius: 6px;
+            font-weight: 600; cursor: pointer; font-size: 1rem;
+            background-color: var(--primary); color: white;
+            width: 100%; transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.9; }
+
+        .result-box { margin-top: 2rem; border-top: 2px solid #e2e8f0; padding-top: 1.5rem; display: none; }
+
+        /* Badges */
+        .badges-container { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+        .verification-badge {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 1rem; border-radius: 8px; font-weight: 700; text-align: center; border: 1px solid transparent;
+        }
+        .status-valid { background-color: #dcfce7; color: var(--success); border-color: #86efac; }
+        .status-invalid { background-color: #fee2e2; color: var(--danger); border-color: #fca5a5; }
+
+        /* Text Data Grid */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .info-group { margin-bottom: 1rem; }
+        .full-width { grid-column: span 2; }
+        .info-label { text-transform: uppercase; font-size: 0.75rem; font-weight: 700; color: #94a3b8; margin-bottom: 4px; }
+        .info-value { font-size: 1.1rem; font-weight: 600; color: #0f172a; }
+        .address-value { font-size: 1.1rem; font-weight: 500; line-height: 1.4; }
+
+        .error { color: #ef4444; margin-top: 10px; display: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<a href="index.html" class="home-button">Home</a>
+
+<div class="main-content">
+    <div class="controls-panel">
+        <h1>ID Scanner</h1>
+
+        <label for="rawData">Raw Barcode Data</label>
+        <textarea id="rawData" placeholder="Click here and scan ID..." autofocus></textarea>
+        
+        <button onclick="decodeData()">Scan & Generate</button>
+        <div id="errorMessage" class="error"></div>
+
+        <div id="results" class="result-box">
+            <div class="badges-container">
+                <div id="badge18" class="verification-badge">
+                    <span id="text18">--</span>
+                </div>
+                <div id="badge21" class="verification-badge">
+                    <span id="text21">--</span>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-group full-width">
+                    <div class="info-label">Full Name</div>
+                    <div class="info-value" id="resName"></div>
+                </div>
+
+                <div class="info-group">
+                    <div class="info-label">Date of Birth</div>
+                    <div class="info-value" id="resDob"></div>
+                </div>
+
+                <div class="info-group">
+                    <div class="info-label">Age</div>
+                    <div class="info-value" id="resAge"></div>
+                </div>
+                
+                <div class="info-group full-width">
+                    <div class="info-label">Residence Address</div>
+                    <div class="address-value" id="resAddress"></div>
+                </div>
+            </div>
+            
+            <p style="text-align:center; color:#94a3b8; font-size:0.8rem; margin-top:20px;">
+                PDF View updated automatically &#8594;
+            </p>
+        </div>
+    </div>
+
+    <div class="preview-panel">
+        <iframe id="pdfPreview" title="PDF Preview"></iframe>
+    </div>
+</div>
+
+<script>
+    // AAMVA Codes
+    const TARGET_CODES = {
+        'DAC': 'First', 'DAD': 'Middle', 'DCS': 'Last', 'DBB': 'DOB',
+        'DAG': 'Street', 'DAI': 'City', 'DAJ': 'State', 'DAK': 'Zip',
+        'DAQ': 'License #', 'DBA': 'Expires', 'DBD': 'Issued', 'DBC': 'Sex',
+        'DAU': 'Height', 'DAW': 'Weight', 'DAY': 'Eyes', 'DAZ': 'Hair',
+        'DCF': 'Doc Discrim', 'DCA': 'Class', 'DCB': 'Restrictions', 'DCD': 'Endorsements'
+    };
+
+    window.onload = function() {
+        updatePreviewPDF(null);
+    };
+
+    function decodeData() {
+        const rawInput = document.getElementById('rawData').value;
+        const resultsBox = document.getElementById('results');
+        const errorMsg = document.getElementById('errorMessage');
+
+        resultsBox.style.display = 'none';
+        errorMsg.style.display = 'none';
+
+        if (!rawInput.trim()) {
+            showError("Please scan a barcode first.");
+            return;
+        }
+
+        let data = {};
+        try {
+            // Parser
+            for (let [code, key] of Object.entries(TARGET_CODES)) {
+                const regex = new RegExp(`${code}(.*?)(?=\\n|\\r|\\Z|DAC|DAD|DCS|DBB|DAG|DAI|DAJ|DAK|DAQ|DBA|DBD|DBC|DAU|DAW|DAY|DAZ|DCF|DCA|DCB|DCD)`, 'i');
+                const match = rawInput.match(regex);
+                if (match && match[1]) data[key] = match[1].trim();
+                else if(rawInput.includes(code)) {
+                    let start = rawInput.indexOf(code) + 3;
+                    let val = rawInput.substring(start).split(/(DA[A-Z]|DC[A-Z]|DB[A-Z])/)[0];
+                    data[key] = val.trim();
+                } else data[key] = ""; 
+            }
+
+            if (!data['DOB'] && !data['Last']) {
+                showError("Could not read ID data.");
+                return;
+            }
+
+            // Formatter
+            const fullName = `${data['First']} ${data['Middle']} ${data['Last']}`.replace(/\s+/g, ' ').trim();
+            const dobRaw = data['DOB'] || "";
+            let dobFormatted = "--";
+            let age = 0;
+            
+            if (dobRaw.length === 8) {
+                let year, month, day;
+                if (dobRaw.startsWith('19') || dobRaw.startsWith('20')) {
+                    year = parseInt(dobRaw.substring(0, 4)); month = parseInt(dobRaw.substring(4, 6)) - 1; day = parseInt(dobRaw.substring(6, 8));
+                } else {
+                    month = parseInt(dobRaw.substring(0, 2)) - 1; day = parseInt(dobRaw.substring(2, 4)); year = parseInt(dobRaw.substring(4, 8));
+                }
+                const birthDate = new Date(year, month, day);
+                const today = new Date();
+                age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+                dobFormatted = birthDate.toLocaleDateString('en-US');
+            }
+
+            const fmtDate = (d) => {
+                if(!d || d.length !== 8) return d;
+                if(d.startsWith('20')) return `${d.substring(4,6)}/${d.substring(6,8)}/${d.substring(0,4)}`;
+                return `${d.substring(0,2)}/${d.substring(2,4)}/${d.substring(4,8)}`;
+            };
+            data['Expires'] = fmtDate(data['Expires']);
+            data['Issued'] = fmtDate(data['Issued']);
+            data['DOB'] = dobFormatted;
+            data['Age'] = age;
+
+            let zip = data['Zip'] || "";
+            if(zip.length > 5) zip = zip.substring(0, 5);
+            data['Zip'] = zip;
+
+            // UI Update
+            document.getElementById('resName').innerText = fullName;
+            document.getElementById('resDob').innerText = dobFormatted;
+            document.getElementById('resAge').innerText = age > 0 ? age : "Error";
+            document.getElementById('resAddress').innerHTML = `${escapeHtml(data['Street'])}<br>${escapeHtml(data['City'])}, ${escapeHtml(data['State'])} ${escapeHtml(zip)}`;
+            updateScreenBadge('badge18', 'text18', age >= 18, "Over 18");
+            updateScreenBadge('badge21', 'text21', age >= 21, "Over 21");
+            resultsBox.style.display = 'block';
+
+            // PDF Update
+            updatePreviewPDF(data);
+
+        } catch (e) {
+            console.error(e);
+            showError("Error processing ID data.");
+        }
+    }
+
+    // --- DYNAMIC LAYOUT PDF (PURE B&W) ---
+    function updatePreviewPDF(data) {
+        if(!window.jspdf) return;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: "p", unit: "in", format: [4, 6] });
+        const CENTER = 2;
+
+        // Ensure pure black for all drawing operations
+        doc.setDrawColor(0); 
+        doc.setTextColor(0); 
+        
+        if (!data) {
+            doc.setFontSize(12);
+            doc.text("Scan barcode to generate report", CENTER, 3, { align: "center" });
+            document.getElementById('pdfPreview').src = doc.output('bloburl');
+            return;
+        }
+
+        // Start coordinates
+        let y = 0.5;
+        
+        // --- 1. Timestamp (Top Right) ---
+        const now = new Date();
+        doc.setFont("courier", "normal"); doc.setFontSize(8);
+        doc.text(now.toLocaleString(), 3.75, 0.4, { align: "right" });
+
+        // --- 2. Dynamic Name Block ---
+        doc.setFontSize(9); doc.setFont("helvetica", "normal");
+        doc.text("FULL NAME", 0.25, y);
+        y += 0.2;
+
+        doc.setFontSize(16); doc.setFont("helvetica", "bold");
+        const fullName = `${data['First']} ${data['Middle']} ${data['Last']}`.toUpperCase();
+        
+        // Wrap text to width of 3.5 inches
+        const splitName = doc.splitTextToSize(fullName, 3.5);
+        doc.text(splitName, 0.25, y);
+        
+        // Calculate dynamic height based on lines of text (approx 0.25in per line)
+        y += (splitName.length * 0.25) + 0.1;
+
+        // --- 3. License # (Moved below name) ---
+        doc.setFontSize(9); doc.setFont("helvetica", "normal");
+        doc.text("LICENSE NO.", 0.25, y);
+        y += 0.2;
+        doc.setFontSize(14); doc.setFont("courier", "bold");
+        doc.text(data['License #'] || "N/A", 0.25, y);
+        y += 0.4;
+
+        // --- 4. Grid Data (Age, Sex, etc) ---
+        // Grid Top Line (Solid Black)
+        doc.setLineWidth(0.02);
+        doc.line(0.25, y, 3.75, y);
+        y += 0.2;
+
+        const drawCell = (label, val, x, yPos) => {
+            doc.setFontSize(8); doc.setFont("helvetica", "normal");
+            doc.text(label, x, yPos);
+            doc.setFontSize(12); doc.setFont("helvetica", "bold");
+            doc.text(val.toString(), x, yPos + 0.25);
+        };
+
+        // Row 1
+        drawCell("AGE", data['Age'], 0.25, y);
+        drawCell("SEX", data['Sex'] || "-", 0.9, y);
+        drawCell("CLASS", data['Class'] || "-", 1.5, y);
+        drawCell("HGT", data['Height'] || "-", 2.3, y);
+        drawCell("WGT", data['Weight'] || "-", 3.1, y);
+        
+        y += 0.5;
+        // Row 2
+        drawCell("EYES", data['Eyes'] || "-", 0.25, y);
+        drawCell("HAIR", data['Hair'] || "-", 0.9, y);
+        drawCell("DOC DISC", data['Doc Discrim'] || "-", 1.5, y);
+
+        y += 0.6; 
+        
+        // --- 5. Important Dates ---
+        drawCell("DATE OF BIRTH", data['DOB'], 0.25, y);
+        drawCell("ISSUED", data['Issued'], 1.6, y);
+        drawCell("EXPIRES", data['Expires'], 2.8, y);
+
+        y += 0.8;
+
+        // --- 6. Address ---
+        doc.setFontSize(9); doc.setFont("helvetica", "normal");
+        doc.text("RESIDENCE ADDRESS", 0.25, y);
+        y += 0.2;
+        doc.setFontSize(11); doc.setFont("courier", "normal");
+        
+        const streetLines = doc.splitTextToSize(data['Street'] || "", 3.5);
+        doc.text(streetLines, 0.25, y);
+        y += (streetLines.length * 0.2);
+        
+        doc.text(`${data['City']}, ${data['State']} ${data['Zip']}`, 0.25, y);
+
+        // --- 7. Footer / Extra ---
+        y += 0.5;
+        doc.setLineWidth(0.02); doc.line(0.25, y, 3.75, y);
+        y += 0.2;
+        
+        doc.setFontSize(8); doc.setFont("helvetica", "normal");
+        doc.text(`RESTRICTIONS: ${data['Restrictions'] || "NONE"}`, 0.25, y);
+        y += 0.15;
+        doc.text(`ENDORSEMENTS: ${data['Endorsements'] || "NONE"}`, 0.25, y);
+
+        document.getElementById('pdfPreview').src = doc.output('bloburl');
+    }
+
+    function updateScreenBadge(badgeId, textId, isValid, label) {
+        const badge = document.getElementById(badgeId);
+        const text = document.getElementById(textId);
+        if (isValid) {
+            badge.className = 'verification-badge status-valid';
+            text.innerHTML = `✅ ${label}`;
+        } else {
+            badge.className = 'verification-badge status-invalid';
+            text.innerHTML = `❌ Under ${label.split(" ")[1]}`;
+        }
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('errorMessage');
+        el.innerText = msg;
+        el.style.display = 'block';
+    }
+
+    function escapeHtml(text) {
+        if (!text) return "";
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+</script>
+
+</body>
+</html>
