@@ -7,10 +7,12 @@
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <style>
         :root {
-            /* Updated to Modern Blue Palette */
-            --theme-primary: #2563eb; /* Royal Blue */
-            --theme-primary-dark: #1d4ed8;
-            --bg-color: #f3f4f6;
+            /* Modern Blue Palette */
+            --primary: #2563eb;       /* Royal Blue */
+            --primary-dark: #1d4ed8;
+            --bg-grey: #f3f4f6;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
             --card-bg: #ffffff;
         }
 
@@ -18,7 +20,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--bg-color);
+            background-color: var(--bg-grey);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,25 +30,26 @@
         .menu-container {
             background-color: var(--card-bg);
             width: 100%;
-            max-width: 400px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 500px; /* Slightly wider to fit descriptions nicely */
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             overflow: hidden;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
-            background-color: var(--theme-primary);
+            background-color: var(--primary);
             color: white;
             padding: 30px 20px;
+            text-align: center;
         }
 
         .header h1 {
             margin: 0;
-            font-size: 22px; 
-            font-weight: 900;
+            font-size: 24px; 
+            font-weight: 800;
             letter-spacing: -0.5px;
-            font-style: italic;
         }
 
         .link-list {
@@ -56,63 +59,86 @@
             gap: 15px;
         }
 
-        .tool-link {
-            display: block;
+        /* --- CARD STYLES --- */
+        .tool-card {
+            display: flex;
+            align-items: center; /* Vertically center icon and text */
+            gap: 15px;
+            
             text-decoration: none;
             background-color: white;
-            color: var(--theme-primary);
-            border: 2px solid var(--theme-primary);
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 16px;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 2px solid #e5e7eb;
+            padding: 20px;
+            border-radius: 12px;
+            
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
 
-        .tool-link:hover {
-            background-color: var(--theme-primary);
-            color: white;
+        .tool-card:hover {
+            transform: translateY(-5px); /* The "Pop up" animation */
+            border-color: var(--primary);
+            box-shadow: 0 12px 20px -5px rgba(37, 99, 235, 0.15);
+        }
+
+        .tool-card:active {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 5px 10px -5px rgba(37, 99, 235, 0.15);
         }
 
-        .tool-link:active {
-            transform: translateY(0);
+        .tool-icon {
+            font-size: 2rem;
+            line-height: 1;
         }
 
+        .tool-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tool-title {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .tool-desc {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            line-height: 1.3;
+        }
+
+        /* --- FOOTER STYLES --- */
         .footer {
             padding: 20px;
             font-size: 13px;
             color: #666;
             border-top: 1px solid #eee;
             background-color: #fafafa;
+            text-align: center;
         }
         
         .contact-info {
-            margin-bottom: 15px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
-        .contact-info p {
-            margin: 4px 0;
-        }
+        .contact-info p { margin: 4px 0; }
 
         .contact-info a {
-            color: var(--theme-primary);
+            color: var(--primary);
             text-decoration: none;
             font-weight: 600;
         }
 
-        .contact-info a:hover {
-            text-decoration: underline;
-        }
+        .contact-info a:hover { text-decoration: underline; }
 
         .credit {
             font-size: 11px;
             color: #999;
             font-style: italic;
             border-top: 1px dashed #ddd;
+            margin-top: 15px;
             padding-top: 10px;
         }
     </style>
@@ -121,30 +147,52 @@
 
     <div class="menu-container">
         <div class="header">
-            <h1>The UPS Store #4066 Web Tools</h1>
+            <h1>The UPS Store #4066</h1>
         </div>
 
-<div class="link-list">
-    <a href="rts.html" class="tool-link">
-        📦 Return To Sender Tag
-    </a>
-    
-    <a href="price.html" class="tool-link">
-        🏷️ Price Tag Tool
-    </a>
-    
-    <a href="wideformatprint.html" class="tool-link">
-        🖨️ Wide Format Price Tool
-    </a>
+        <div class="link-list">
+            
+            <a href="rts.html" class="tool-card">
+                <div class="tool-icon">📦</div>
+                <div class="tool-info">
+                    <span class="tool-title">Return To Sender Tag</span>
+                    <span class="tool-desc">Generate RTS labels with barcodes and reasons.</span>
+                </div>
+            </a>
+            
+            <a href="price.html" class="tool-card">
+                <div class="tool-icon">🏷️</div>
+                <div class="tool-info">
+                    <span class="tool-title">Price Tag Tool</span>
+                    <span class="tool-desc">Create shelf tags and item labels with SKU barcodes.</span>
+                </div>
+            </a>
+            
+            <a href="wideformatprint.html" class="tool-card">
+                <div class="tool-icon">🖨️</div>
+                <div class="tool-info">
+                    <span class="tool-title">Wide Format Price Tool</span>
+                    <span class="tool-desc">Calculate costs for posters, banners, and blueprints.</span>
+                </div>
+            </a>
 
-    <a href="generalquote.html" class="tool-link">
-        📝 General Quote Calculator
-    </a>
-    
-    <a href="idcheck.htm" class="tool-link">
-        🆔 ID Decoder
-    </a>
-</div>
+            <a href="generalquote.html" class="tool-card">
+                <div class="tool-icon">📝</div>
+                <div class="tool-info">
+                    <span class="tool-title">General Quote Calculator</span>
+                    <span class="tool-desc">Standard print and service quotes.</span>
+                </div>
+            </a>
+            
+            <a href="idcheck.htm" class="tool-card">
+                <div class="tool-icon">🆔</div>
+                <div class="tool-info">
+                    <span class="tool-title">ID Decoder</span>
+                    <span class="tool-desc">Scan PDF417 barcodes to check Age/Expiry.</span>
+                </div>
+            </a>
+
+        </div>
 
         <div class="footer">
             <div class="contact-info">
@@ -152,6 +200,7 @@
                 <p><a href="mailto:store4066@theupsstore.com">store4066@theupsstore.com</a></p>
                 <p>Ph: (408) 429-8009 | Fax: (408) 429-8787</p>
             </div>
+            <div class="credit">Made by Gradin Dodson</div>
         </div>
     </div>
 
